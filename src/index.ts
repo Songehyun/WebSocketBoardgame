@@ -7,7 +7,7 @@ const app = express();
 const server = createServer(app);
 const wss = new Server({ server });
 
-const game = new Game(2); // 2명의 플레이어로 게임 인스턴스 생성
+const game = new Game(4);
 
 app.get('/', (req, res) => {
   res.send('WebSocket Board Game Server is running');
@@ -31,7 +31,28 @@ wss.on('connection', (ws: WebSocket) => {
         data.pieceId,
         data.diceRoll,
       );
+
       ws.send(JSON.stringify({ action: 'moveResult', message: result }));
+
+      // 현재 말의 위치 업데이트
+      const currentPiece = game.players[currentPlayerId].pieces[data.pieceId];
+      const piecePosition = game.convertPositionToCoordinates(
+        currentPiece.position,
+      );
+
+      // 클라이언트에게 말 위치 업데이트 메시지 전송
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(
+            JSON.stringify({
+              action: 'updatePiecePosition',
+              playerId: currentPlayerId,
+              pieceId: data.pieceId,
+              position: piecePosition,
+            }),
+          );
+        }
+      });
 
       // 게임 상태 업데이트 및 턴 넘김
       game.nextTurn();

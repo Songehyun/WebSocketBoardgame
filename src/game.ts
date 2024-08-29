@@ -54,6 +54,19 @@ class Game {
     // 말 이동
     piece.position += diceRoll;
 
+    // 맵 좌표로 변환 (여기서는 예시로 변환 로직을 추가)
+    const mapPosition = this.convertPositionToCoordinates(piece.position);
+
+    // WebSocket을 통해 클라이언트에 좌표 전송
+    ws.send(
+      JSON.stringify({
+        action: 'updatePiecePosition',
+        playerId: playerId,
+        pieceId: pieceId,
+        position: mapPosition,
+      }),
+    );
+
     // 상대 말을 잡는 경우
     this.players.forEach((p) => {
       if (p.id !== playerId) {
@@ -69,6 +82,21 @@ class Game {
     return `플레이어 ${playerId + 1}번이 ${
       pieceId + 1
     }번 말을 ${diceRoll}칸 이동했습니다.`;
+  }
+
+  convertPositionToCoordinates(position: number): {
+    left: number;
+    top: number;
+  } {
+    // 예시 좌표 변환 로직. position 값을 통해 맵 상의 좌표(left, top)를 계산
+    // 실제 맵 좌표에 맞게 수정 필요
+    const coordinatesMap = [
+      { left: 0, top: 0 }, // position 0 (시작 지점)
+      { left: 50, top: 50 }, // position 1
+      // 나머지 좌표 추가...
+    ];
+
+    return coordinatesMap[position];
   }
 
   nextTurn(): void {

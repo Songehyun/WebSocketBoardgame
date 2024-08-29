@@ -3,65 +3,436 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebSocket Board Game</title>
+    <title>테트리스 형태 레이아웃</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      #root {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+      }
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      .rectangle {
+        position: absolute;
+        width: 62px;
+        height: 67px;
+        background: #d9d9d9;
+      }
+      /* 여기에 각 사각형의 개별 스타일을 추가합니다 */
+      #rect1 {
+        left: 1304px;
+        top: 581px;
+      }
+      #rect2 {
+        left: 1238px;
+        top: 581px;
+      }
+      #rect3 {
+        left: 1172px;
+        top: 581px;
+      }
+      #rect4 {
+        left: 1107px;
+        top: 581px;
+        width: 61px;
+      }
+      #rect5 {
+        left: 1041px;
+        top: 581px;
+      }
+      #rect6 {
+        left: 1041px;
+        top: 654px;
+        height: 66px;
+      }
+      #rect7 {
+        left: 1041px;
+        top: 725px;
+      }
+      #rect8 {
+        left: 1041px;
+        top: 797px;
+      }
+      #rect9 {
+        left: 1041px;
+        top: 868px;
+      }
+      #rect10 {
+        left: 975px;
+        top: 868px;
+      }
+      #rect11 {
+        left: 909px;
+        top: 868px;
+      }
+      #rect12 {
+        left: 843px;
+        top: 868px;
+      }
+      #rect13 {
+        left: 777px;
+        top: 868px;
+      }
+      #rect14 {
+        left: 777px;
+        top: 797px;
+      }
+      #rect15 {
+        left: 777px;
+        top: 725px;
+      }
+      #rect16 {
+        left: 777px;
+        top: 654px;
+        height: 66px;
+      }
+      #rect17 {
+        left: 777px;
+        top: 581px;
+      }
+      #rect18 {
+        left: 712px;
+        top: 581px;
+        width: 61px;
+      }
+      #rect19 {
+        left: 646px;
+        top: 581px;
+      }
+      #rect20 {
+        left: 580px;
+        top: 581px;
+      }
+      #rect21 {
+        left: 514px;
+        top: 581px;
+      }
+      #rect22 {
+        left: 514px;
+        top: 510px;
+        height: 68px;
+      }
+      #rect23 {
+        left: 514px;
+        top: 439px;
+      }
+      #rect24 {
+        left: 514px;
+        top: 367px;
+        height: 68px;
+      }
+      #rect25 {
+        left: 514px;
+        top: 297px;
+      }
+      #rect26 {
+        left: 580px;
+        top: 297px;
+      }
+      #rect27 {
+        left: 646px;
+        top: 297px;
+      }
+      #rect28 {
+        left: 712px;
+        top: 297px;
+        width: 61px;
+      }
+      #rect29 {
+        left: 777px;
+        top: 297px;
+      }
+      #rect30 {
+        left: 777px;
+        top: 225px;
+        height: 66px;
+      }
+      #rect31 {
+        left: 777px;
+        top: 153px;
+      }
+      #rect32 {
+        left: 777px;
+        top: 81px;
+      }
+      #rect33 {
+        left: 777px;
+        top: 10px;
+      }
+      #rect34 {
+        left: 843px;
+        top: 10px;
+      }
+      #rect35 {
+        left: 909px;
+        top: 10px;
+      }
+      #rect36 {
+        left: 975px;
+        top: 10px;
+      }
+      #rect37 {
+        left: 1041px;
+        top: 10px;
+      }
+      #rect38 {
+        left: 1041px;
+        top: 81px;
+      }
+      #rect39 {
+        left: 1041px;
+        top: 153px;
+      }
+      #rect40 {
+        left: 1041px;
+        top: 225px;
+        height: 66px;
+      }
+      #rect41 {
+        left: 1041px;
+        top: 297px;
+      }
+      #rect42 {
+        left: 1107px;
+        top: 297px;
+        width: 61px;
+      }
+      #rect43 {
+        left: 1172px;
+        top: 297px;
+      }
+      #rect44 {
+        left: 1238px;
+        top: 297px;
+      }
+      #rect45 {
+        left: 1304px;
+        top: 297px;
+      }
+      #rect46 {
+        left: 1304px;
+        top: 367px;
+        height: 68px;
+      }
+      #rect47 {
+        left: 1304px;
+        top: 439px;
+      }
+      #rect48 {
+        left: 1304px;
+        top: 510px;
+        height: 68px;
+      }
+
+      /* 플레이어 도착지 */
+      #player1-dest1 {
+        left: 1238px;
+        top: 439px;
+        background: #ff0000;
+      }
+      #player1-dest2 {
+        left: 1172px;
+        top: 439px;
+        background: #ff0000;
+      }
+      #player1-dest3 {
+        left: 1107px;
+        top: 439px;
+        width: 61px;
+        background: #ff0000;
+      }
+      #player1-dest4 {
+        left: 1041px;
+        top: 439px;
+        background: #ff0000;
+      }
+
+      #player2-dest1 {
+        left: 909px;
+        top: 797px;
+        background: #ffd900;
+      }
+      #player2-dest2 {
+        left: 909px;
+        top: 725px;
+        background: #ffd900;
+      }
+      #player2-dest3 {
+        left: 909px;
+        top: 654px;
+        height: 66px;
+        background: #ffd900;
+      }
+      #player2-dest4 {
+        left: 909px;
+        top: 581px;
+        background: #ffd900;
+      }
+
+      #player3-dest1 {
+        left: 580px;
+        top: 439px;
+        background: #1eff00;
+      }
+      #player3-dest2 {
+        left: 646px;
+        top: 439px;
+        background: #1eff00;
+      }
+      #player3-dest3 {
+        left: 712px;
+        top: 439px;
+        width: 61px;
+        background: #1eff00;
+      }
+      #player3-dest4 {
+        left: 777px;
+        top: 439px;
+        background: #1eff00;
+      }
+
+      #player4-dest1 {
+        left: 909px;
+        top: 81px;
+        background: #0048ff;
+      }
+      #player4-dest2 {
+        left: 909px;
+        top: 153px;
+        background: #0048ff;
+      }
+      #player4-dest3 {
+        left: 909px;
+        top: 225px;
+        height: 66px;
+        background: #0048ff;
+      }
+      #player4-dest4 {
+        left: 909px;
+        top: 297px;
+        background: #0048ff;
+      }
+
+      /* 플레이어 */
+      #player1 {
+        left: 1132px;
+        top: 672px;
+        width: 234px;
+        height: 263px;
+        background: #ff0000;
+      }
+      #player2 {
+        left: 514px;
+        top: 672px;
+        width: 234px;
+        height: 263px;
+        background: #ffd900;
+      }
+      #player3 {
+        left: 514px;
+        top: 10px;
+        width: 234px;
+        height: 263px;
+        background: #1eff00;
+      }
+      #player4 {
+        left: 1132px;
+        top: 10px;
+        width: 234px;
+        height: 263px;
+        background: #0048ff;
+      }
+    </style>
   </head>
   <body>
-    <h1>WebSocket 보드게임</h1>
-    <button id="connect">WebSocket 연결하기</button>
-    <button id="rollDice">주사위 굴리기</button>
-    <input id="pieceId" placeholder="말 ID 입력" />
-    <button id="movePiece">말 이동시키기</button>
-    <div id="messages"></div>
+    <div id="root">
+      <div class="container">
+        <div id="rect1" class="rectangle"></div>
+        <div id="rect2" class="rectangle"></div>
+        <div id="rect3" class="rectangle"></div>
+        <div id="rect4" class="rectangle"></div>
+        <div id="rect5" class="rectangle"></div>
+        <div id="rect6" class="rectangle"></div>
+        <div id="rect7" class="rectangle"></div>
+        <div id="rect8" class="rectangle"></div>
+        <div id="rect9" class="rectangle"></div>
+        <div id="rect10" class="rectangle"></div>
+        <div id="rect11" class="rectangle"></div>
+        <div id="rect12" class="rectangle"></div>
+        <div id="rect13" class="rectangle"></div>
+        <div id="rect14" class="rectangle"></div>
+        <div id="rect15" class="rectangle"></div>
+        <div id="rect16" class="rectangle"></div>
+        <div id="rect17" class="rectangle"></div>
+        <div id="rect18" class="rectangle"></div>
+        <div id="rect19" class="rectangle"></div>
+        <div id="rect20" class="rectangle"></div>
+        <div id="rect21" class="rectangle"></div>
+        <div id="rect22" class="rectangle"></div>
+        <div id="rect23" class="rectangle"></div>
+        <div id="rect24" class="rectangle"></div>
+        <div id="rect25" class="rectangle"></div>
+        <div id="rect26" class="rectangle"></div>
+        <div id="rect27" class="rectangle"></div>
+        <div id="rect28" class="rectangle"></div>
+        <div id="rect29" class="rectangle"></div>
+        <div id="rect30" class="rectangle"></div>
+        <div id="rect31" class="rectangle"></div>
+        <div id="rect32" class="rectangle"></div>
+        <div id="rect33" class="rectangle"></div>
+        <div id="rect34" class="rectangle"></div>
+        <div id="rect35" class="rectangle"></div>
+        <div id="rect36" class="rectangle"></div>
+        <div id="rect37" class="rectangle"></div>
+        <div id="rect38" class="rectangle"></div>
+        <div id="rect39" class="rectangle"></div>
+        <div id="rect40" class="rectangle"></div>
+        <div id="rect41" class="rectangle"></div>
+        <div id="rect42" class="rectangle"></div>
+        <div id="rect43" class="rectangle"></div>
+        <div id="rect44" class="rectangle"></div>
+        <div id="rect45" class="rectangle"></div>
+        <div id="rect46" class="rectangle"></div>
+        <div id="rect47" class="rectangle"></div>
+        <div id="rect48" class="rectangle"></div>
 
-    <script>
-      let ws;
-      let lastDiceRoll = 0; // 마지막으로 굴린 주사위 결과를 저장
+        <!-- 플레이어 도착지 -->
+        <div id="player1-dest1" class="rectangle"></div>
+        <div id="player1-dest2" class="rectangle"></div>
+        <div id="player1-dest3" class="rectangle"></div>
+        <div id="player1-dest4" class="rectangle"></div>
 
-      document.getElementById('connect').addEventListener('click', () => {
-        ws = new WebSocket('ws://localhost:3000');
+        <div id="player2-dest1" class="rectangle"></div>
+        <div id="player2-dest2" class="rectangle"></div>
+        <div id="player2-dest3" class="rectangle"></div>
+        <div id="player2-dest4" class="rectangle"></div>
 
-        ws.onopen = () => {
-          console.log('WebSocket 서버에 연결되었습니다.');
-        };
+        <div id="player3-dest1" class="rectangle"></div>
+        <div id="player3-dest2" class="rectangle"></div>
+        <div id="player3-dest3" class="rectangle"></div>
+        <div id="player3-dest4" class="rectangle"></div>
 
-        ws.onmessage = (message) => {
-          const data = JSON.parse(message.data);
-          const messagesDiv = document.getElementById('messages');
-          const newMessage = document.createElement('div');
+        <div id="player4-dest1" class="rectangle"></div>
+        <div id="player4-dest2" class="rectangle"></div>
+        <div id="player4-dest3" class="rectangle"></div>
+        <div id="player4-dest4" class="rectangle"></div>
 
-          if (data.action === 'diceRoll') {
-            lastDiceRoll = data.value; // 서버에서 받은 주사위 결과 저장
-            newMessage.textContent = `주사위 결과: ${lastDiceRoll}`;
-          } else if (data.action === 'moveResult') {
-            newMessage.textContent = `이동 결과: ${data.message}`;
-          } else if (data.action === 'updateState') {
-            newMessage.textContent = `게임 상태 업데이트:\n현재 턴: ${
-              data.현재_턴
-            }\n게임 상태:\n${JSON.stringify(data.gameState, null, 2)}`;
-          }
-
-          messagesDiv.appendChild(newMessage);
-        };
-
-        ws.onclose = () => {
-          console.log('WebSocket 서버와 연결이 끊어졌습니다.');
-        };
-      });
-
-      document.getElementById('rollDice').addEventListener('click', () => {
-        ws.send(JSON.stringify({ action: 'rollDice' }));
-      });
-
-      document.getElementById('movePiece').addEventListener('click', () => {
-        const pieceId = document.getElementById('pieceId').value;
-        ws.send(
-          JSON.stringify({
-            action: 'movePiece',
-            pieceId: parseInt(pieceId) - 1, // 클라이언트에서 1부터 시작하는 ID를 사용하고 있으므로 0 기반으로 변환
-            diceRoll: lastDiceRoll, // 서버에서 받은 주사위 결과 사용
-          }),
-        );
-      });
-    </script>
+        <!-- 플레이어 -->
+        <div id="player1" class="rectangle"></div>
+        <div id="player2" class="rectangle"></div>
+        <div id="player3" class="rectangle"></div>
+        <div id="player4" class="rectangle"></div>
+      </div>
+    </div>
   </body>
 </html>
