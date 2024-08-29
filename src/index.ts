@@ -12,9 +12,18 @@ app.get('/', (req, res) => {
 
 wss.on('connection', (ws) => {
   console.log('New client connected');
+
   ws.on('message', (message) => {
     console.log(`Received: ${message}`);
+
+    // 모든 연결된 클라이언트에게 메시지 브로드캐스트
+    wss.clients.forEach((client) => {
+      if (client.readyState === ws.OPEN) {
+        client.send(`Broadcast: ${message}`);
+      }
+    });
   });
+
   ws.on('close', () => {
     console.log('Client disconnected');
   });
