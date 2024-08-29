@@ -1,0 +1,303 @@
+/* styles.css */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  grid-template-rows: repeat(13, 1fr);
+  width: 1440px;
+  height: 720px;
+  position: relative;
+}
+
+.rectangle {
+  background: #d9d9d9;
+  border: 1px white solid;
+}
+
+/* 플레이어들 */
+#player1 {
+  grid-area: 11 / 11 / 14 / 14;
+  background: #ff0000;
+}
+
+#player2 {
+  grid-area: 11 / 1 / 14 / 4;
+  background: #ffd900;
+}
+
+#player3 {
+  grid-area: 1 / 1 / 4 / 4;
+  background: #1eff00;
+}
+
+#player4 {
+  grid-area: 1 / 11 / 4 / 14;
+  background: #0048ff;
+}
+
+/* player 1 goal */
+#player1-dest1 {
+  grid-area: 7 / 13 / 7 / 12;
+  background: #ff0000;
+}
+
+#player1-dest2 {
+  grid-area: 7 / 12 / 7 / 11;
+  background: #ff0000;
+}
+
+#player1-dest3 {
+  grid-area: 7 / 11 / 7 / 10;
+  background: #ff0000;
+}
+
+#player1-dest4 {
+  grid-area: 7 / 10 / 7 / 9;
+  background: #ff0000;
+}
+
+/* player 2 goal */
+#player2-dest1 {
+  grid-area: 13 / 7 / 12 / 7;
+  background: #ffd900;
+}
+
+#player2-dest2 {
+  grid-area: 12 / 7 / 11 / 7;
+  background: #ffd900;
+}
+
+#player2-dest3 {
+  grid-area: 11 / 7 / 10 / 7;
+  background: #ffd900;
+}
+
+#player2-dest4 {
+  grid-area: 10 / 7 / 9 / 7;
+  background: #ffd900;
+}
+
+/* player 3 goal */
+#player3-dest1 {
+  grid-area: 7 / 2 / 7 / 2;
+  background: #1eff00;
+}
+
+#player3-dest2 {
+  grid-area: 7 / 3 / 7 / 3;
+  background: #1eff00;
+}
+
+#player3-dest3 {
+  grid-area: 7 / 4 / 7 / 4;
+  background: #1eff00;
+}
+
+#player3-dest4 {
+  grid-area: 7 / 5 / 7 / 5;
+  background: #1eff00;
+}
+
+/* player 4 goal */
+#player4-dest1 {
+  grid-area: 2 / 7 / 2 / 7;
+  background: #0048ff;
+}
+
+#player4-dest2 {
+  grid-area: 3 / 7 / 3 / 7;
+  background: #0048ff;
+}
+
+#player4-dest3 {
+  grid-area: 4 / 7 / 4 / 7;
+  background: #0048ff;
+}
+
+#player4-dest4 {
+  grid-area: 5 / 7 / 5 / 7;
+  background: #0048ff;
+}
+
+/* rect1의 위치 */
+#rect1 {
+  grid-area: 9 / 13 / 10 / 14;
+}
+
+/* rect2 ~ rect5 위치 (왼쪽으로 5칸) */
+#rect2 {
+  grid-area: 9 / 12 / 10 / 13;
+}
+#rect3 {
+  grid-area: 9 / 11 / 10 / 12;
+}
+#rect4 {
+  grid-area: 9 / 10 / 10 / 11;
+}
+#rect5 {
+  grid-area: 9 / 9 / 10 / 10;
+}
+
+/* rect6 ~ rect9 위치 (아래로 4칸) */
+#rect6 {
+  grid-area: 10 / 9 / 11 / 10;
+}
+#rect7 {
+  grid-area: 11 / 9 / 12 / 10;
+}
+#rect8 {
+  grid-area: 12 / 9 / 13 / 10;
+}
+#rect9 {
+  grid-area: 13 / 9 / 14 / 10;
+}
+
+/* rect10 ~ rect13 위치 (왼쪽으로 4칸) */
+#rect10 {
+  grid-area: 13 / 8 / 14 / 9;
+}
+#rect11 {
+  grid-area: 13 / 7 / 14 / 8;
+}
+#rect12 {
+  grid-area: 13 / 6 / 14 / 7;
+}
+#rect13 {
+  grid-area: 13 / 5 / 14 / 6;
+}
+
+/* rect14 ~ rect17 위치 (위로 4칸) */
+#rect14 {
+  grid-area: 12 / 5 / 13 / 6;
+}
+#rect15 {
+  grid-area: 11 / 5 / 12 / 6;
+}
+#rect16 {
+  grid-area: 10 / 5 / 11 / 6;
+}
+#rect17 {
+  grid-area: 9 / 5 / 10 / 6;
+}
+
+/* rect18 ~ rect21 위치 (왼쪽으로 4칸) */
+#rect18 {
+  grid-area: 9 / 4 / 10 / 5;
+}
+#rect19 {
+  grid-area: 9 / 3 / 10 / 4;
+}
+#rect20 {
+  grid-area: 9 / 2 / 10 / 3;
+}
+#rect21 {
+  grid-area: 9 / 1 / 10 / 2;
+}
+
+/* rect22 ~ rect25 위치 (위로 4칸) */
+#rect22 {
+  grid-area: 8 / 1 / 9 / 2;
+}
+#rect23 {
+  grid-area: 7 / 1 / 8 / 2;
+}
+#rect24 {
+  grid-area: 6 / 1 / 7 / 2;
+}
+#rect25 {
+  grid-area: 5 / 1 / 6 / 2;
+}
+
+/* rect26 ~ rect29 위치 (오른쪽으로 4칸) */
+#rect26 {
+  grid-area: 5 / 2 / 6 / 3;
+}
+#rect27 {
+  grid-area: 5 / 3 / 6 / 4;
+}
+#rect28 {
+  grid-area: 5 / 4 / 6 / 5;
+}
+#rect29 {
+  grid-area: 5 / 5 / 6 / 6;
+}
+
+/* rect30 ~ rect33 위치 (위로 4칸) */
+#rect30 {
+  grid-area: 4 / 5 / 5 / 6;
+}
+#rect31 {
+  grid-area: 3 / 5 / 4 / 6;
+}
+#rect32 {
+  grid-area: 2 / 5 / 3 / 6;
+}
+#rect33 {
+  grid-area: 1 / 5 / 2 / 6;
+}
+
+/* rect34 ~ rect37 위치 (오른쪽으로 4칸) */
+#rect34 {
+  grid-area: 1 / 6 / 2 / 7;
+}
+#rect35 {
+  grid-area: 1 / 7 / 2 / 8;
+}
+#rect36 {
+  grid-area: 1 / 8 / 2 / 9;
+}
+#rect37 {
+  grid-area: 1 / 9 / 2 / 10;
+}
+
+/* rect38 ~ rect41 위치 (아래로 4칸) */
+#rect38 {
+  grid-area: 2 / 9 / 3 / 10;
+}
+#rect39 {
+  grid-area: 3 / 9 / 4 / 10;
+}
+#rect40 {
+  grid-area: 4 / 9 / 5 / 10;
+}
+#rect41 {
+  grid-area: 5 / 9 / 6 / 10;
+}
+
+/* rect42 ~ rect45 위치 (오른쪽으로 4칸) */
+#rect42 {
+  grid-area: 5 / 10 / 6 / 11;
+}
+#rect43 {
+  grid-area: 5 / 11 / 6 / 12;
+}
+#rect44 {
+  grid-area: 5 / 12 / 6 / 13;
+}
+#rect45 {
+  grid-area: 5 / 13 / 6 / 14;
+}
+
+/* rect46 ~ rect48 위치 (아래로 3칸) */
+#rect46 {
+  grid-area: 6 / 13 / 7 / 14;
+}
+#rect47 {
+  grid-area: 7 / 13 / 8 / 14;
+}
+#rect48 {
+  grid-area: 8 / 13 / 9 / 14;
+}
