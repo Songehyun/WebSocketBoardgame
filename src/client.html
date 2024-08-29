@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>테트리스 형태 레이아웃</title>
-    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div id="root">
@@ -80,11 +80,33 @@
         <div id="player4-dest4" class="rectangle"></div>
 
         <!-- 플레이어 -->
-        <div id="player1" class="rectangle"></div>
-        <div id="player2" class="rectangle"></div>
-        <div id="player3" class="rectangle"></div>
-        <div id="player4" class="rectangle"></div>
+        <div id="player1-nest" class="nest">
+          <div class="piece player1-piece1"></div>
+          <div class="piece player1-piece2"></div>
+          <div class="piece player1-piece3"></div>
+          <div class="piece player1-piece4"></div>
+        </div>
+        <div id="player2-nest" class="nest">
+          <div class="piece player2-piece1"></div>
+          <div class="piece player2-piece2"></div>
+          <div class="piece player2-piece3"></div>
+          <div class="piece player2-piece4"></div>
+        </div>
+        <div id="player3-nest" class="nest">
+          <div class="piece player3-piece1"></div>
+          <div class="piece player3-piece2"></div>
+          <div class="piece player3-piece3"></div>
+          <div class="piece player3-piece4"></div>
+        </div>
+        <div id="player4-nest" class="nest">
+          <div class="piece player4-piece1"></div>
+          <div class="piece player4-piece2"></div>
+          <div class="piece player4-piece3"></div>
+          <div class="piece player4-piece4"></div>
+        </div>
       </div>
+      <button id="roll-dice" class="dice-button">Roll</button>
     </div>
+    <script src="./rollandmove.js"></script>
   </body>
 </html>
