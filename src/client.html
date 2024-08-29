@@ -1,43 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebSocket Test</title>
+    <title>WebSocket Board Game</title>
   </head>
   <body>
-    <h1>WebSocket Test</h1>
-    <button id="connect">Connect to WebSocket</button>
-    <input id="messageInput" placeholder="Type your message here" />
-    <button id="sendMessage">Send Message</button>
+    <h1>WebSocket 보드게임</h1>
+    <button id="connect">WebSocket 연결하기</button>
+    <button id="rollDice">주사위 굴리기</button>
+    <input id="pieceId" placeholder="말 ID 입력" />
+    <button id="movePiece">말 이동시키기</button>
     <div id="messages"></div>
 
     <script>
       let ws;
+      let lastDiceRoll = 0; // 마지막으로 굴린 주사위 결과를 저장
 
       document.getElementById('connect').addEventListener('click', () => {
         ws = new WebSocket('ws://localhost:3000');
 
         ws.onopen = () => {
-          console.log('Connected to WebSocket server');
+          console.log('WebSocket 서버에 연결되었습니다.');
         };
 
         ws.onmessage = (message) => {
-          console.log('Received from server:', message.data);
+          const data = JSON.parse(message.data);
           const messagesDiv = document.getElementById('messages');
           const newMessage = document.createElement('div');
-          newMessage.textContent = message.data;
+
+          if (data.action === 'diceRoll') {
+            lastDiceRoll = data.value; // 서버에서 받은 주사위 결과 저장
+            newMessage.textContent = `주사위 결과: ${lastDiceRoll}`;
+          } else if (data.action === 'moveResult') {
+            newMessage.textContent = `이동 결과: ${data.message}`;
+          } else if (data.action === 'updateState') {
+            newMessage.textContent = `게임 상태 업데이트:\n현재 턴: ${
+              data.현재_턴
+            }\n게임 상태:\n${JSON.stringify(data.gameState, null, 2)}`;
+          }
+
           messagesDiv.appendChild(newMessage);
         };
 
         ws.onclose = () => {
-          console.log('Disconnected from WebSocket server');
+          console.log('WebSocket 서버와 연결이 끊어졌습니다.');
         };
       });
 
-      document.getElementById('sendMessage').addEventListener('click', () => {
-        const message = document.getElementById('messageInput').value;
-        ws.send(message);
+      document.getElementById('rollDice').addEventListener('click', () => {
+        ws.send(JSON.stringify({ action: 'rollDice' }));
+      });
+
+      document.getElementById('movePiece').addEventListener('click', () => {
+        const pieceId = document.getElementById('pieceId').value;
+        ws.send(
+          JSON.stringify({
+            action: 'movePiece',
+            pieceId: parseInt(pieceId) - 1, // 클라이언트에서 1부터 시작하는 ID를 사용하고 있으므로 0 기반으로 변환
+            diceRoll: lastDiceRoll, // 서버에서 받은 주사위 결과 사용
+          }),
+        );
       });
     </script>
   </body>
