@@ -2,8 +2,7 @@ import automateTurn from './sortMacro'; // automateTurn 함수가 위치한 경�
 
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
-  const automateButton = document.getElementById('automate-button') as HTMLButtonElement;
-  
+  const automateButton = document.getElementById('automate-turn') as HTMLButtonElement;
   let currentPlayer: number = 1;
   const totalPlayers: number = 4;
   let currentPlayerPiece: HTMLElement | null = null;
