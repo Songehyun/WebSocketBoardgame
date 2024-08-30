@@ -116,9 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
         Array.from(newRect.children).forEach((child) => {
           if (child !== currentPlayerPiece) {
             const piecePlayer = child.dataset.player;
+            const piece = child;
             console.log(piecePlayer);
             console.log(child);
-            moveToNest(piecePlayer, child);
+            moveToNest(piecePlayer, piece);
           }
         });
         newRect.appendChild(currentPlayerPiece);
@@ -139,14 +140,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function moveToNest(player, piece) {
     const nest = document.getElementById(`player${player}-nest`);
-    const pieceNumber = piece.classList[1].replace(/[^0-9]/g, '');
-    const nestPosition = nest.querySelector(
-      `.player${player}-piece-place${pieceNumber}`, // player의 place로 이동하도록 변경
-    );
-    console.log(nest);
-    console.log(pieceNumber);
-    console.log(nestPosition);
-    nestPosition.appendChild(piece);
+    const pieceClasses = piece.classList;
+    const lastClass = pieceClasses[pieceClasses.length - 1]; // 마지막 클래스를 가져옴
+    const pieceNumber = lastClass.match(/\d+$/)[0]; // 마지막 숫자만 추출
+
+    console.log(piece); // piece 요소 확인
+    console.log(pieceNumber); // pieceNumber 확인
+
+    // 셀렉터 문자열 확인
+    const selector = `#player${player}-piece-place${pieceNumber}`;
+    console.log(selector); // 최종 셀렉터를 출력
+
+    const nestPosition = nest.querySelector(selector); // 정확한 위치에 piece 추가
+    if (nestPosition) {
+      console.log(nestPosition);
+      nestPosition.appendChild(piece); // piece를 nest의 지정된 위치로 이동
+    } else {
+      console.log('해당 위치에 요소를 찾을 수 없습니다.');
+    }
     playCount[player - 1] = 0;
   }
 
