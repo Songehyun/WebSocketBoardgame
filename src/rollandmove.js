@@ -93,8 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const occupyingPlayer = startRect.firstChild.dataset.player;
       console.log(occupyingPlayer);
       if (occupyingPlayer !== String(player)) {
-        alert(`Player ${occupyingPlayer}의 말이 시작 위치에 있습니다.`);
+        alert(
+          `Player ${occupyingPlayer}의 말을 잡았습니다! 추가 턴을 얻습니다.`,
+        );
         moveToNest(occupyingPlayer, startRect.firstChild);
+        extraRoll = true; // 추가 주사위 굴림 플래그 설정
       }
     }
 
@@ -103,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPlayerRect = startRectNumber;
 
     // 목적지 체크
-    // checkDestination(player, piece);
+    checkDestination(player, piece);
   }
 
   function movePlayer(player, roll) {
@@ -126,6 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const destination = document.getElementById(
         playerDestinations[player][destIndex],
       );
+
+      if (destIndex >= 4) {
+        alert(`Player ${player} cannot move beyond destination 4. Turn ends.`);
+        return; // 주사위 굴림 종료
+      }
 
       // 목적지로 이동
       if (destination.childElementCount === 0) {
@@ -179,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPlayerRect = finalPosition;
 
     // 목적지 체크
-    // checkDestination(player, currentPlayerPiece);
+    checkDestination(player, currentPlayerPiece);
   }
 
   function moveToNest(player, piece) {
@@ -208,30 +216,30 @@ document.addEventListener('DOMContentLoaded', () => {
     piece.setAttribute('data-playcount', '0'); // piece의 playCount 초기화
   }
 
-  // function checkDestination(player, piece) {
-  //   const destinations = playerDestinations[player];
-  //   const piecePlayCount = piece.getAttribute('data-playcount');
+  function checkDestination(player, piece) {
+    const destinations = playerDestinations[player];
+    const piecePlayCount = piece.getAttribute('data-playcount');
 
-  //   // 특정 조건에 따라 목적지로 이동
-  //   if (
-  //     (player === 1 && currentPlayerRect > 47) ||
-  //     (player === 2 && currentPlayerRect > 11) ||
-  //     (player === 3 && currentPlayerRect > 23) ||
-  //     (player === 4 && currentPlayerRect > 35)
-  //   ) {
-  //     if (piecePlayCount === '1') {
-  //       for (let i = 0; i < destinations.length; i++) {
-  //         const dest = document.getElementById(destinations[i]);
-  //         if (dest.childElementCount === 0) {
-  //           dest.appendChild(piece);
-  //           alert(`Player ${player} has reached the destination!`);
-  //           console.log(
-  //             `Player ${player}, Piece ${piece.classList[1]}: has reached the destination`,
-  //           );
-  //           break;
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+    // 특정 조건에 따라 목적지로 이동
+    if (
+      (player === 1 && currentPlayerRect > 47) ||
+      (player === 2 && currentPlayerRect > 11) ||
+      (player === 3 && currentPlayerRect > 23) ||
+      (player === 4 && currentPlayerRect > 35)
+    ) {
+      if (piecePlayCount === '1') {
+        for (let i = 0; i < destinations.length; i++) {
+          const dest = document.getElementById(destinations[i]);
+          if (dest.childElementCount === 0) {
+            dest.appendChild(piece);
+            alert(`Player ${player} has reached the destination!`);
+            console.log(
+              `Player ${player}, Piece ${piece.classList[1]}: has reached the destination`,
+            );
+            break;
+          }
+        }
+      }
+    }
+  }
 });
