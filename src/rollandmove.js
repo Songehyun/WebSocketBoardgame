@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalPlayers = 4;
   let currentPlayerPiece = null;
   let currentPlayerRect = null;
-  let playCount = [0, 0, 0, 0]; // 각 플레이어의 playcount
   let extraRoll = false; // 주사위를 다시 굴릴 수 있는지 여부를 나타내는 플래그
 
   const playerPositions = {
@@ -46,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.piece').forEach((piece) => {
+    piece.setAttribute('data-playcount', '0'); // 각 piece에 초기 playCount를 0으로 설정
     piece.addEventListener('click', () => {
       const piecePlayer = piece.classList[1].match(/\d/)[0]; // 말의 플레이어 번호 추출
       if (parseInt(piecePlayer) !== currentPlayer) {
@@ -73,7 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 범위를 넘어서면 다시 1부터 시작
     if (startRectNumber > 48) {
       startRectNumber = startRectNumber - 48;
-      playCount[player - 1] = 1;
+      piece.setAttribute('data-playcount', '1'); // piece의 playCount 증가
+      console.log(
+        `Player ${player}, Piece ${piece.classList[1]}: playCount increased to 1`,
+      );
     }
 
     const startRect = document.getElementById(`rect${startRectNumber}`);
@@ -91,15 +94,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // 말 이동
     startRect.appendChild(piece);
     currentPlayerRect = startRectNumber;
+
+    // 목적지 체크
+    checkDestination(player, piece);
   }
 
   function movePlayer(player, roll) {
     const nextPosition = currentPlayerRect + roll;
     const finalPosition = nextPosition > 48 ? nextPosition - 48 : nextPosition;
 
-    // playcount 증가 조건
+    // piece의 playCount 증가 조건
     if (nextPosition > 48) {
-      playCount[player - 1] = 1;
+      currentPlayerPiece.setAttribute('data-playcount', '1'); // piece의 playCount 증가
+      console.log(
+        `Player ${player}, Piece ${currentPlayerPiece.classList[1]}: playCount increased to 1`,
+      );
     }
 
     const newRect = document.getElementById(`rect${finalPosition}`);
@@ -139,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPlayerRect = finalPosition;
 
     // 목적지 체크
-    checkDestination(player);
+    checkDestination(player, currentPlayerPiece);
   }
 
   function moveToNest(player, piece) {
@@ -159,14 +168,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nestPosition) {
       console.log(nestPosition);
       nestPosition.appendChild(piece); // piece를 nest의 지정된 위치로 이동
+      console.log(
+        `Player ${player}, Piece ${piece.classList[1]}: moved back to nest and playCount reset to 0`,
+      );
     } else {
       console.log('해당 위치에 요소를 찾을 수 없습니다.');
     }
-    playCount[player - 1] = 0;
+    piece.setAttribute('data-playcount', '0'); // piece의 playCount 초기화
   }
 
-  function checkDestination(player) {
+  function checkDestination(player, piece) {
     const destinations = playerDestinations[player];
+    const piecePlayCount = piece.getAttribute('data-playcount');
 
     // 특정 조건에 따라 목적지로 이동
     if (
@@ -175,11 +188,15 @@ document.addEventListener('DOMContentLoaded', () => {
       (player === 3 && currentPlayerRect > 23) ||
       (player === 4 && currentPlayerRect > 35)
     ) {
-      if (playCount[player - 1] === 1) {
+      if (piecePlayCount === '1') {
         for (let i = 0; i < destinations.length; i++) {
           const dest = document.getElementById(destinations[i]);
           if (dest.childElementCount === 0) {
-            dest.appendChild(currentPlayerPiece);
+            dest.appendChild(piece);
+            alert(`Player ${player} has reached the destination!`);
+            console.log(
+              `Player ${player}, Piece ${piece.classList[1]}: has reached the destination`,
+            );
             break;
           }
         }
