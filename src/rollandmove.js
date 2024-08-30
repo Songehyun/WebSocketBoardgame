@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice');
   let currentPlayer = 1;
   const totalPlayers = 4;
-  let currentPlayerPiece;
-  let currentPlayerRect;
+  let currentPlayerPiece = null;
+  let currentPlayerRect = null;
   let playCount = [0, 0, 0, 0]; // 각 플레이어의 playcount
 
   const playerPositions = {
@@ -31,7 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const diceRoll = Math.floor(Math.random() * 6) + 1;
     alert(`Player ${currentPlayer} rolled a ${diceRoll}`);
 
-    movePlayer(currentPlayer, diceRoll);
+    // 현재 말이 nest에 있으면, 주사위 값만큼 첫 번째 위치로 이동
+    if (currentPlayerRect === null) {
+      moveToStartPosition(currentPlayer, currentPlayerPiece, diceRoll);
+    } else {
+      movePlayer(currentPlayer, diceRoll);
+    }
+
     currentPlayer = (currentPlayer % totalPlayers) + 1; // 다음 플레이어로 전환
     currentPlayerPiece = null; // 턴 종료 후 말 초기화
   });
@@ -46,24 +52,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
       currentPlayerPiece = piece;
 
-      // 만약 선택한 말이 nest에 있으면 첫 번째 rect로 이동
+      // nest에 있으면 currentPlayerRect를 null로 유지
       const isInNest = piece.closest('.nest');
-      if (isInNest) {
-        currentPlayerRect = parseInt(
-          playerPositions[currentPlayer].replace('rect', ''),
-        );
-        moveToStartPosition(currentPlayer, piece);
-      } else {
-        currentPlayerRect = parseInt(
-          piece.parentElement.id.replace('rect', ''),
-        );
-      }
+      currentPlayerRect = isInNest
+        ? null
+        : parseInt(piece.parentElement.id.replace('rect', ''));
     });
   });
 
-  function moveToStartPosition(player, piece) {
-    const startRectId = playerPositions[player];
-    const startRect = document.getElementById(startRectId);
+  function moveToStartPosition(player, piece, roll) {
+    let startRectId = playerPositions[player];
+    let startRectNumber = parseInt(startRectId.replace('rect', ''));
+
+    // 주사위 값만큼 더해 첫 번째 위치부터 이동
+    startRectNumber += roll - 1;
+
+    // 범위를 넘어서면 다시 1부터 시작
+    if (startRectNumber > 48) {
+      startRectNumber = startRectNumber - 48;
+      playCount[player - 1] = 1;
+    }
+
+    const startRect = document.getElementById(`rect${startRectNumber}`);
 
     // 만약 시작 위치에 다른 플레이어의 말이 있으면 충돌 처리
     if (startRect.childElementCount > 0) {
@@ -76,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 말 이동
     startRect.appendChild(piece);
-    currentPlayerRect = parseInt(startRectId.replace('rect', ''));
+    currentPlayerRect = startRectNumber;
   }
 
   function movePlayer(player, roll) {
