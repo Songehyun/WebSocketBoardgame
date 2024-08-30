@@ -20,6 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
     4: ['player4-dest1', 'player4-dest2', 'player4-dest3', 'player4-dest4'],
   };
 
+  const playerThresholds = {
+    1: 47,
+    2: 11,
+    3: 23,
+    4: 35,
+  };
+
   rollButton.addEventListener('click', () => {
     if (!currentPlayerPiece) {
       alert('먼저 말을 선택하세요!');
@@ -96,12 +103,14 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPlayerRect = startRectNumber;
 
     // 목적지 체크
-    checkDestination(player, piece);
+    // checkDestination(player, piece);
   }
 
   function movePlayer(player, roll) {
     const nextPosition = currentPlayerRect + roll;
     const finalPosition = nextPosition > 48 ? nextPosition - 48 : nextPosition;
+    const piecePlayCount = currentPlayerPiece.getAttribute('data-playcount');
+    const threshold = playerThresholds[player];
 
     // piece의 playCount 증가 조건
     if (nextPosition > 48) {
@@ -111,44 +120,66 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     }
 
-    const newRect = document.getElementById(`rect${finalPosition}`);
+    // PlayCount가 1인 경우 목표 위치로 이동
+    if (piecePlayCount === '1' && finalPosition > threshold) {
+      const destIndex = finalPosition - threshold - 1;
+      const destination = document.getElementById(
+        playerDestinations[player][destIndex],
+      );
 
-    // 충돌 체크
-    if (newRect.childElementCount > 0) {
-      const firstChildPlayer = newRect.firstChild.dataset.player;
-      const lastChildPlayer = player;
-      console.log(firstChildPlayer);
-      console.log(lastChildPlayer);
-
-      if (firstChildPlayer === String(lastChildPlayer)) {
-        // 두 말이 동일한 플레이어의 것이라면 두 개 모두 유지
-        newRect.appendChild(currentPlayerPiece);
+      // 목적지로 이동
+      if (destination.childElementCount === 0) {
+        destination.appendChild(currentPlayerPiece);
+        alert(`Player ${player} has reached destination ${destIndex + 1}!`);
+        console.log(
+          `Player ${player}, Piece ${currentPlayerPiece.classList[1]}: has reached the destination`,
+        );
       } else {
-        // 다른 플레이어의 말이라면, 현재 말만 유지하고 나머지 말을 원래의 nest로 보냄
-        Array.from(newRect.children).forEach((child) => {
-          if (child !== currentPlayerPiece) {
-            const piecePlayer = child.dataset.player;
-            const piece = child;
-            console.log(piecePlayer);
-            console.log(child);
-            moveToNest(piecePlayer, piece);
-          }
-        });
-        newRect.appendChild(currentPlayerPiece);
-        // 주사위를 한 번 더 굴릴 수 있도록 설정
-        alert(`Player ${lastChildPlayer} rolls again!`);
-        extraRoll = true; // 추가 주사위 굴림 플래그 설정
-        return;
+        alert(`Player ${player}'s piece could not enter the destination.`);
+        console.log(
+          `Player ${player}, Piece ${currentPlayerPiece.classList[1]}: could not enter the destination`,
+        );
       }
     } else {
-      // 말 이동
-      newRect.appendChild(currentPlayerPiece);
+      const newRect = document.getElementById(`rect${finalPosition}`);
+
+      // 충돌 체크
+      if (newRect.childElementCount > 0) {
+        const firstChildPlayer = newRect.firstChild.dataset.player;
+        const lastChildPlayer = player;
+        console.log(firstChildPlayer);
+        console.log(lastChildPlayer);
+
+        if (firstChildPlayer === String(lastChildPlayer)) {
+          // 두 말이 동일한 플레이어의 것이라면 두 개 모두 유지
+          newRect.appendChild(currentPlayerPiece);
+        } else {
+          // 다른 플레이어의 말이라면, 현재 말만 유지하고 나머지 말을 원래의 nest로 보냄
+          Array.from(newRect.children).forEach((child) => {
+            if (child !== currentPlayerPiece) {
+              const piecePlayer = child.dataset.player;
+              const piece = child;
+              console.log(piecePlayer);
+              console.log(child);
+              moveToNest(piecePlayer, piece);
+            }
+          });
+          newRect.appendChild(currentPlayerPiece);
+          // 주사위를 한 번 더 굴릴 수 있도록 설정
+          alert(`Player ${lastChildPlayer} rolls again!`);
+          extraRoll = true; // 추가 주사위 굴림 플래그 설정
+          return;
+        }
+      } else {
+        // 말 이동
+        newRect.appendChild(currentPlayerPiece);
+      }
     }
 
     currentPlayerRect = finalPosition;
 
     // 목적지 체크
-    checkDestination(player, currentPlayerPiece);
+    // checkDestination(player, currentPlayerPiece);
   }
 
   function moveToNest(player, piece) {
@@ -177,30 +208,30 @@ document.addEventListener('DOMContentLoaded', () => {
     piece.setAttribute('data-playcount', '0'); // piece의 playCount 초기화
   }
 
-  function checkDestination(player, piece) {
-    const destinations = playerDestinations[player];
-    const piecePlayCount = piece.getAttribute('data-playcount');
+  // function checkDestination(player, piece) {
+  //   const destinations = playerDestinations[player];
+  //   const piecePlayCount = piece.getAttribute('data-playcount');
 
-    // 특정 조건에 따라 목적지로 이동
-    if (
-      (player === 1 && currentPlayerRect > 47) ||
-      (player === 2 && currentPlayerRect > 11) ||
-      (player === 3 && currentPlayerRect > 23) ||
-      (player === 4 && currentPlayerRect > 35)
-    ) {
-      if (piecePlayCount === '1') {
-        for (let i = 0; i < destinations.length; i++) {
-          const dest = document.getElementById(destinations[i]);
-          if (dest.childElementCount === 0) {
-            dest.appendChild(piece);
-            alert(`Player ${player} has reached the destination!`);
-            console.log(
-              `Player ${player}, Piece ${piece.classList[1]}: has reached the destination`,
-            );
-            break;
-          }
-        }
-      }
-    }
-  }
+  //   // 특정 조건에 따라 목적지로 이동
+  //   if (
+  //     (player === 1 && currentPlayerRect > 47) ||
+  //     (player === 2 && currentPlayerRect > 11) ||
+  //     (player === 3 && currentPlayerRect > 23) ||
+  //     (player === 4 && currentPlayerRect > 35)
+  //   ) {
+  //     if (piecePlayCount === '1') {
+  //       for (let i = 0; i < destinations.length; i++) {
+  //         const dest = document.getElementById(destinations[i]);
+  //         if (dest.childElementCount === 0) {
+  //           dest.appendChild(piece);
+  //           alert(`Player ${player} has reached the destination!`);
+  //           console.log(
+  //             `Player ${player}, Piece ${piece.classList[1]}: has reached the destination`,
+  //           );
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 });
