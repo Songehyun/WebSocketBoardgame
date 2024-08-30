@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 만약 시작 위치에 다른 플레이어의 말이 있으면 충돌 처리
     if (startRect.childElementCount > 0) {
       const occupyingPlayer = startRect.firstChild.dataset.player;
+      console.log(occupyingPlayer);
       if (occupyingPlayer !== String(player)) {
         alert(`Player ${occupyingPlayer}의 말이 시작 위치에 있습니다.`);
         moveToNest(occupyingPlayer, startRect.firstChild);
@@ -102,20 +103,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 충돌 체크
     if (newRect.childElementCount > 0) {
-      const occupyingPlayer = newRect.firstChild.dataset.player;
-      if (occupyingPlayer !== String(player)) {
-        // 충돌 처리
-        alert(
-          `Player ${occupyingPlayer}'s piece is sent back to the nest! Player ${player} rolls again.`,
-        );
-        moveToNest(occupyingPlayer, newRect.firstChild);
-        // 주사위 다시 굴리기
+      const firstChildPlayer = newRect.firstChild.dataset.player;
+      const lastChildPlayer = player;
+      console.log(firstChildPlayer);
+      console.log(lastChildPlayer);
+
+      if (firstChildPlayer === String(lastChildPlayer)) {
+        // 두 말이 동일한 플레이어의 것이라면 두 개 모두 유지
+        newRect.appendChild(currentPlayerPiece);
+      } else {
+        // 다른 플레이어의 말이라면, 현재 말만 유지하고 나머지 말을 원래의 nest로 보냄
+        Array.from(newRect.children).forEach((child) => {
+          if (child !== currentPlayerPiece) {
+            const piecePlayer = child.dataset.player;
+            const pieceNumber = child.classList[1].replace(/[^0-9]/g, '');
+            moveToNest(piecePlayer, child);
+          }
+        });
+        newRect.appendChild(currentPlayerPiece);
+        // 주사위를 한 번 더 굴릴 수 있도록 설정
+        alert(`Player ${lastChildPlayer} rolls again!`);
         return;
       }
+    } else {
+      // 말 이동
+      newRect.appendChild(currentPlayerPiece);
     }
 
-    // 말 이동
-    newRect.appendChild(currentPlayerPiece);
     currentPlayerRect = finalPosition;
 
     // 목적지 체크
@@ -126,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nest = document.getElementById(`player${player}-nest`);
     const pieceNumber = piece.classList[1].replace(/[^0-9]/g, '');
     const nestPosition = nest.querySelector(
-      `.player${player}-piece${pieceNumber}`,
+      `.player${player}-piece-place${pieceNumber}`, // player의 place로 이동하도록 변경
     );
     nestPosition.appendChild(piece);
     playCount[player - 1] = 0;
