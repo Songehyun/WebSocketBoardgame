@@ -116,7 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
         Array.from(newRect.children).forEach((child) => {
           if (child !== currentPlayerPiece) {
             const piecePlayer = child.dataset.player;
-            const pieceNumber = child.classList[1].replace(/[^0-9]/g, '');
+            console.log(piecePlayer);
+            console.log(child);
             moveToNest(piecePlayer, child);
           }
         });
@@ -142,6 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const nestPosition = nest.querySelector(
       `.player${player}-piece-place${pieceNumber}`, // player의 place로 이동하도록 변경
     );
+    console.log(nest);
+    console.log(pieceNumber);
+    console.log(nestPosition);
     nestPosition.appendChild(piece);
     playCount[player - 1] = 0;
   }
