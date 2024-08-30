@@ -1,5 +1,3 @@
-// JavaScript
-
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice');
   let currentPlayer = 1;
@@ -7,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPlayerPiece = null;
   let currentPlayerRect = null;
   let playCount = [0, 0, 0, 0]; // 각 플레이어의 playcount
+  let extraRoll = false; // 주사위를 다시 굴릴 수 있는지 여부를 나타내는 플래그
 
   const playerPositions = {
     1: 'rect1',
@@ -38,7 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
       movePlayer(currentPlayer, diceRoll);
     }
 
-    currentPlayer = (currentPlayer % totalPlayers) + 1; // 다음 플레이어로 전환
+    // 플레이어 전환
+    if (!extraRoll) {
+      currentPlayer = (currentPlayer % totalPlayers) + 1; // 다음 플레이어로 전환
+    }
+    extraRoll = false; // 추가 주사위 굴림 플래그 초기화
     currentPlayerPiece = null; // 턴 종료 후 말 초기화
   });
 
@@ -125,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         newRect.appendChild(currentPlayerPiece);
         // 주사위를 한 번 더 굴릴 수 있도록 설정
         alert(`Player ${lastChildPlayer} rolls again!`);
+        extraRoll = true; // 추가 주사위 굴림 플래그 설정
         return;
       }
     } else {
