@@ -8,6 +8,9 @@
   </head>
   <body>
     <div id="root">
+      <div id="chat-container">
+        <p id="current-player-display">Player 1의 턴입니다.</p>
+      </div>
       <div class="container">
         <div id="rect1" class="rectangle"></div>
         <div id="rect2" class="rectangle"></div>
@@ -143,8 +146,9 @@
       <div id="dice-container">
         <img id="dice-result" src="../assets/img/1.png" alt="다이스1" />
         <button id="roll-dice" class="dice-button">Roll</button>
+        <!-- <button id="automate-turn">auto</button> -->
       </div>
     </div>
-    <script src="../dist/rollAndMove.bundle.js"></script>
+    <script src="./rollandmove.js"></script>
   </body>
 </html>

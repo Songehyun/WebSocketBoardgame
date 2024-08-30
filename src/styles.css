@@ -7,10 +7,22 @@
 
 #root {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* 아이템들이 위쪽에 정렬되도록 설정 */
   justify-content: center;
-  width: 100%; /* 화면 크기의 80%로 설정 */
+  width: 100%;
   height: 80%; /* 화면 크기의 80%로 설정 */
+}
+
+/* chat-container 스타일 추가 */
+#chat-container {
+  width: 200px;
+  margin-right: 20px; /* 왼쪽에 여백 추가 */
+}
+
+#current-player-display {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
 .container {

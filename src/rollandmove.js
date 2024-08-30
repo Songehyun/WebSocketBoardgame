@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice');
+  const currentPlayerDisplay = document.getElementById(
+    'current-player-display',
+  );
   let currentPlayer = 1;
   const totalPlayers = 4;
   let currentPlayerPiece = null;
@@ -60,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         parentElement.appendChild(piece);
         piece.setAttribute('data-playcount', playCount);
       });
+      updateCurrentPlayerDisplay(); // 로드 후 플레이어 표시 업데이트
     }
   }
 
@@ -86,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     extraRoll = false;
     currentPlayerPiece = null;
 
+    updateCurrentPlayerDisplay(); // 플레이어 표시 업데이트
     saveGameState();
     highlightMovablePieces(); // 움직일 수 있는 말에 테두리 적용
   });
@@ -239,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
       (player === 3 && currentPlayerRect > 23) ||
       (player === 4 && currentPlayerRect > 35)
     ) {
-      if (piecePlayCount === '1') {
+      if (player === 1 || piecePlayCount === '1') {
         for (let i = 0; i < destinations.length; i++) {
           const dest = document.getElementById(destinations[i]);
           if (dest.childElementCount === 0) {
@@ -289,7 +294,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     alert('게임이 리셋되었습니다. Player 1의 차례입니다.');
     highlightMovablePieces(); // 게임이 리셋된 후에도 테두리 표시
+    updateCurrentPlayerDisplay(); // 게임이 리셋된 후 플레이어 표시 업데이트
+  }
+
+  function updateCurrentPlayerDisplay() {
+    currentPlayerDisplay.textContent = `Player ${currentPlayer}의 턴입니다.`;
   }
 
   highlightMovablePieces(); // 처음 페이지 로드 시 테두리 표시
+  updateCurrentPlayerDisplay(); // 처음 페이지 로드 시 플레이어 표시 업데이트
 });
