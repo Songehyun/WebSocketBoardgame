@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadGameState();
 
   rollButton.addEventListener('click', () => {
-    const diceRoll = Math.random() < 0.5 ? 6 : 5;
+    const diceRoll = Math.floor(Math.random() * 6) + 1;
     const diceResultImg = document.getElementById('dice-result');
     diceResultImg.src = `../assets/img/${diceRoll}.png`;
 
