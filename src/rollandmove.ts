@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function highlightMovablePieces() {
     document.querySelectorAll('.piece').forEach((piece) => {
-      const piecePlayer = parseInt(piece.classList[1].match(/\d/)[0], 10);
+      const piecePlayer = parseInt(piece.classList[1]?.match(/\d/)?.[0] ?? '0', 10);
       const pieceParent = piece.parentElement;
 
       if (piecePlayer === currentPlayer && !(pieceParent && pieceParent.id.includes('dest'))) {
@@ -114,12 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.piece').forEach((piece) => {
     piece.setAttribute('data-playcount', '0');
     piece.addEventListener('click', () => {
-      const piecePlayer = parseInt(piece.classList[1].match(/\d/)[0], 10);
+      const piecePlayer = parseInt(piece.classList[1]?.match(/\d/)?.[0] ?? '0', 10);
       if (piecePlayer !== currentPlayer) {
         return;
       }
 
-      currentPlayerPiece = piece;
+      currentPlayerPiece = piece as HTMLElement;
 
       const isInNest = piece.closest('.nest');
       currentPlayerRect = isInNest ? null : parseInt(piece.parentElement!.id.replace('rect', ''), 10);
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetGame() {
     document.querySelectorAll('.piece').forEach((piece) => {
-      const player = parseInt(piece.classList[1].match(/\d/)[0], 10);
+      const player = parseInt(piece.classList[1]?.match(/\d/)?.[0] ?? '0', 10);
       const pieceNumber = piece.classList[1].match(/\d+$/)![0];
       const nest = document.getElementById(`player${player}-piece-place${pieceNumber}`) as HTMLElement;
       nest.appendChild(piece);
