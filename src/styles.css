@@ -3,6 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  user-select: none; /* 텍스트 선택을 막음 */
 }
 
 #root {
@@ -30,8 +31,10 @@
   grid-template-columns: repeat(13, 1fr);
   grid-template-rows: repeat(13, 1fr);
   width: 1440px;
-  height: 720px;
+  height: 900px;
   position: relative;
+  transform: scale(0.8); /* 컨테이너 안의 요소들을 80% 크기로 축소 */
+  transform-origin: top; /* 축소 시 중심을 기준으로 축소되도록 설정 */
 }
 
 .rectangle {
