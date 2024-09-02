@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/rollandmove.ts',
+  entry: './src/roll.ts',
   module: {
     rules: [
       {
