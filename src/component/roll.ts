@@ -3,6 +3,7 @@ import { playerPositions } from '../assets/literal/playerPositions';
 import { playerDestinations } from '../assets/literal/playerDestinations';
 import { playerThresholds } from '../assets/literal/playerThresholds'; // 새로 추가된 부분
 import { highlightMovablePieces } from '../assets/function/highlightMovablePieces';
+import { moveToNest } from '../assets/function/moveToNest';
 
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
@@ -108,6 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
         moveToNest(
           parseInt(occupyingPlayer!, 10),
           startRect.firstChild as HTMLElement,
+          currentPlayer,
+          currentPlayerRect,
+          extraRoll,
         );
         extraRoll = true;
       }
@@ -186,10 +190,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const firstChildPlayer = (
         newRect.firstChild as HTMLElement
       )?.getAttribute('data-player');
-      if (firstChildPlayer !== String(player)) {
+      const occupyingPlayer = firstChildPlayer
+        ? parseInt(firstChildPlayer, 10)
+        : null;
+
+      if (occupyingPlayer !== null && occupyingPlayer !== player) {
+        const startRect = newRect;
         moveToNest(
-          parseInt(firstChildPlayer!, 10),
+          occupyingPlayer,
           newRect.firstChild as HTMLElement,
+          currentPlayer,
+          currentPlayerRect,
+          extraRoll,
         );
         extraRoll = true;
       }
@@ -203,25 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (player !== 1 && initialRect <= 48 && position > 48) {
       currentPlayerPiece!.setAttribute('data-playcount', '1');
     }
-  }
-
-  function moveToNest(player: number, piece: HTMLElement) {
-    const nest = document.getElementById(`player${player}-nest`) as HTMLElement;
-    const pieceClasses = piece.classList;
-    const lastClass = pieceClasses[pieceClasses.length - 1];
-    const pieceNumber = lastClass.match(/\d+$/)![0];
-
-    const selector = `#player${player}-piece-place${pieceNumber}`;
-    const nestPosition = nest.querySelector(selector) as HTMLElement;
-
-    if (nestPosition) {
-      nestPosition.appendChild(piece);
-    }
-    piece.setAttribute('data-playcount', '0');
-
-    console.log(`Player ${player}'s piece ${pieceNumber} moved to nest`);
-
-    saveGameState(currentPlayer, currentPlayerRect, extraRoll);
   }
 
   function checkVictory(player: number) {
