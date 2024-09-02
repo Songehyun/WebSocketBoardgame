@@ -1,4 +1,6 @@
 import { saveGameState, loadGameState } from '../assets/function/gameState';
+import { playerPositions } from '../assets/literal/playerPositions';
+import { playerDestinations } from '../assets/literal/playerDestinations';
 
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
@@ -10,20 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPlayerPiece: HTMLElement | null = null;
   let currentPlayerRect: number | null = null;
   let extraRoll: boolean = false;
-
-  const playerPositions: { [key: number]: string } = {
-    1: 'rect1',
-    2: 'rect13',
-    3: 'rect25',
-    4: 'rect37',
-  };
-
-  const playerDestinations: { [key: number]: string[] } = {
-    1: ['player1-dest1', 'player1-dest2', 'player1-dest3', 'player1-dest4'],
-    2: ['player2-dest1', 'player2-dest2', 'player2-dest3', 'player2-dest4'],
-    3: ['player3-dest1', 'player3-dest2', 'player3-dest3', 'player3-dest4'],
-    4: ['player4-dest1', 'player4-dest2', 'player4-dest3', 'player4-dest4'],
-  };
 
   const playerThresholds: { [key: number]: number } = {
     1: 47,
