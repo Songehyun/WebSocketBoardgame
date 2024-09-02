@@ -2,6 +2,7 @@ import { saveGameState, loadGameState } from '../assets/function/gameState';
 import { playerPositions } from '../assets/literal/playerPositions';
 import { playerDestinations } from '../assets/literal/playerDestinations';
 import { playerThresholds } from '../assets/literal/playerThresholds'; // 새로 추가된 부분
+import { highlightMovablePieces } from '../assets/function/highlightMovablePieces';
 
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
@@ -56,27 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateCurrentPlayerDisplay();
     saveGameState(currentPlayer, currentPlayerRect, extraRoll);
-    highlightMovablePieces();
+    highlightMovablePieces(currentPlayer);
   });
-
-  function highlightMovablePieces() {
-    document.querySelectorAll('.piece').forEach((piece) => {
-      const piecePlayer = parseInt(
-        piece.classList[1]?.match(/\d/)?.[0] ?? '0',
-        10,
-      );
-      const pieceParent = piece.parentElement;
-
-      if (
-        piecePlayer === currentPlayer &&
-        !(pieceParent && pieceParent.id.includes('dest'))
-      ) {
-        (piece as HTMLElement).style.border = '2px solid black';
-      } else {
-        (piece as HTMLElement).style.border = 'none';
-      }
-    });
-  }
 
   document.querySelectorAll('.piece').forEach((piece) => {
     piece.setAttribute('data-playcount', '0');
@@ -276,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('gameState');
 
     alert('게임이 리셋되었습니다. Player 1의 차례입니다.');
-    highlightMovablePieces();
+    highlightMovablePieces(currentPlayer);
     updateCurrentPlayerDisplay();
   }
 
@@ -284,6 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPlayerDisplay.textContent = `Player ${currentPlayer}의 턴입니다.`;
   }
 
-  highlightMovablePieces();
+  highlightMovablePieces(currentPlayer);
   updateCurrentPlayerDisplay();
 });
