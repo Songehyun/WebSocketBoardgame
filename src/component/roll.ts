@@ -1,15 +1,14 @@
 import { saveGameState, loadGameState } from '../assets/function/gameState';
 import { playerPositions } from '../assets/literal/playerPositions';
 import { playerDestinations } from '../assets/literal/playerDestinations';
-import { playerThresholds } from '../assets/literal/playerThresholds'; // 새로 추가된 부분
+import { playerThresholds } from '../assets/literal/playerThresholds';
 import { highlightMovablePieces } from '../assets/function/highlightMovablePieces';
 import { moveToNest } from '../assets/function/moveToNest';
+import { updateCurrentPlayerDisplay } from '../assets/function/playerUtils';
+import { checkVictory } from '../assets/function/victoryCheck';
 
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
-  const currentPlayerDisplay = document.getElementById(
-    'current-player-display',
-  ) as HTMLParagraphElement;
   let currentPlayer: number = 1;
   const totalPlayers: number = 4;
   let currentPlayerPiece: HTMLElement | null = null;
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
       parentElement?.appendChild(piece);
       piece.setAttribute('data-playcount', playCount);
     });
-    updateCurrentPlayerDisplay();
+    updateCurrentPlayerDisplay(currentPlayer);
   }
 
   rollButton.addEventListener('click', () => {
@@ -56,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     extraRoll = false;
     currentPlayerPiece = null;
 
-    updateCurrentPlayerDisplay();
+    updateCurrentPlayerDisplay(currentPlayer);
     saveGameState(currentPlayer, currentPlayerRect, extraRoll);
     highlightMovablePieces(currentPlayer);
   });
@@ -174,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (destination.childElementCount === 0) {
       destination.appendChild(currentPlayerPiece!);
       console.log(`Player ${player}'s piece moved to ${destination.id}`);
-      checkVictory(player);
+      checkVictory(player, playerDestinations, resetGame); // 올바르게 수정된 함수 호출
     }
   }
 
@@ -195,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
         : null;
 
       if (occupyingPlayer !== null && occupyingPlayer !== player) {
-        const startRect = newRect;
         moveToNest(
           occupyingPlayer,
           newRect.firstChild as HTMLElement,
@@ -214,22 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (player !== 1 && initialRect <= 48 && position > 48) {
       currentPlayerPiece!.setAttribute('data-playcount', '1');
-    }
-  }
-
-  function checkVictory(player: number) {
-    const destinations = playerDestinations[player];
-
-    const allFilled = destinations.every((destId) => {
-      const dest = document.getElementById(destId);
-      return (
-        dest?.childElementCount !== undefined && dest.childElementCount > 0
-      );
-    });
-
-    if (allFilled) {
-      alert(`Player ${player} 승리!`);
-      resetGame();
     }
   }
 
@@ -252,13 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     alert('게임이 리셋되었습니다. Player 1의 차례입니다.');
     highlightMovablePieces(currentPlayer);
-    updateCurrentPlayerDisplay();
-  }
-
-  function updateCurrentPlayerDisplay() {
-    currentPlayerDisplay.textContent = `Player ${currentPlayer}의 턴입니다.`;
+    updateCurrentPlayerDisplay(currentPlayer);
   }
 
   highlightMovablePieces(currentPlayer);
-  updateCurrentPlayerDisplay();
+  updateCurrentPlayerDisplay(currentPlayer);
 });
