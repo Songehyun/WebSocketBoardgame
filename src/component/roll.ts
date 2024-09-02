@@ -1,6 +1,7 @@
 import { saveGameState, loadGameState } from '../assets/function/gameState';
 import { playerPositions } from '../assets/literal/playerPositions';
 import { playerDestinations } from '../assets/literal/playerDestinations';
+import { playerThresholds } from '../assets/literal/playerThresholds'; // 새로 추가된 부분
 
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
@@ -12,13 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPlayerPiece: HTMLElement | null = null;
   let currentPlayerRect: number | null = null;
   let extraRoll: boolean = false;
-
-  const playerThresholds: { [key: number]: number } = {
-    1: 47,
-    2: 11,
-    3: 23,
-    4: 35,
-  };
 
   // 게임 상태 로드
   const gameState = loadGameState();
