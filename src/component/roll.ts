@@ -1,3 +1,5 @@
+import { saveGameState, loadGameState } from '../assets/function/gameState';
+
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
   const currentPlayerDisplay = document.getElementById(
@@ -30,51 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
     4: 35,
   };
 
-  function saveGameState() {
-    const gameState = {
-      currentPlayer,
-      currentPlayerRect,
-      extraRoll,
-      pieces: {} as {
-        [key: string]: { parentId: string; playCount: string | null };
-      },
-    };
+  // 게임 상태 로드
+  const gameState = loadGameState();
+  if (gameState) {
+    currentPlayer = gameState.currentPlayer || 1;
+    currentPlayerRect = gameState.currentPlayerRect || null;
+    extraRoll = gameState.extraRoll || false;
 
-    document.querySelectorAll('.piece').forEach((piece) => {
-      const pieceId = piece.classList[1];
-      const parentId = piece.parentElement!.id;
-      const playCount = piece.getAttribute('data-playcount');
-      gameState.pieces[pieceId] = { parentId, playCount };
+    Object.keys(gameState.pieces).forEach((pieceId) => {
+      const { parentId, playCount } = gameState.pieces[pieceId];
+      const piece = document.querySelector(`.${pieceId}`) as HTMLElement;
+      const parentElement = document.getElementById(parentId);
+      parentElement?.appendChild(piece);
+      piece.setAttribute('data-playcount', playCount);
     });
-
-    localStorage.setItem('gameState', JSON.stringify(gameState));
+    updateCurrentPlayerDisplay();
   }
-
-  function loadGameState() {
-    const savedGameState = localStorage.getItem('gameState');
-    if (savedGameState) {
-      const gameState = JSON.parse(savedGameState) as {
-        currentPlayer: number;
-        currentPlayerRect: number | null;
-        extraRoll: boolean;
-        pieces: { [key: string]: { parentId: string; playCount: string } };
-      };
-      currentPlayer = gameState.currentPlayer || 1;
-      currentPlayerRect = gameState.currentPlayerRect || null;
-      extraRoll = gameState.extraRoll || false;
-
-      Object.keys(gameState.pieces).forEach((pieceId) => {
-        const { parentId, playCount } = gameState.pieces[pieceId];
-        const piece = document.querySelector(`.${pieceId}`) as HTMLElement;
-        const parentElement = document.getElementById(parentId);
-        parentElement?.appendChild(piece);
-        piece.setAttribute('data-playcount', playCount);
-      });
-      updateCurrentPlayerDisplay();
-    }
-  }
-
-  loadGameState();
 
   rollButton.addEventListener('click', () => {
     const diceRoll = Math.floor(Math.random() * 6) + 1;
@@ -100,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPlayerPiece = null;
 
     updateCurrentPlayerDisplay();
-    saveGameState();
+    saveGameState(currentPlayer, currentPlayerRect, extraRoll);
     highlightMovablePieces();
   });
 
@@ -183,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `Player ${player}'s piece ${pieceNumber} moved to ${startRect.id}`,
     );
 
-    saveGameState();
+    saveGameState(currentPlayer, currentPlayerRect, extraRoll);
   }
 
   function movePlayer(player: number, roll: number) {
@@ -218,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     currentPlayerRect = finalPosition;
-    saveGameState();
+    saveGameState(currentPlayer, currentPlayerRect, extraRoll);
   }
 
   function moveToDestination(player: number, steps: number) {
@@ -284,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log(`Player ${player}'s piece ${pieceNumber} moved to nest`);
 
-    saveGameState();
+    saveGameState(currentPlayer, currentPlayerRect, extraRoll);
   }
 
   function checkVictory(player: number) {
