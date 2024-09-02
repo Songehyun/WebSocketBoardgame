@@ -76,6 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadGameState();
 
+  // 스페이스바를 누르면 Roll 버튼을 클릭한 것과 동일한 효과 추가
+  document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+      event.preventDefault(); // 스크롤 방지
+      rollButton.click(); // Roll 버튼 클릭 효과
+    }
+  });
+
   rollButton.addEventListener('click', () => {
     const diceRoll = Math.floor(Math.random() * 6) + 1;
     const diceResultImg = document.getElementById(
