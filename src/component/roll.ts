@@ -1,14 +1,15 @@
 import { saveGameState, loadGameState } from '../assets/function/gameState';
 import { playerPositions } from '../assets/literal/playerPositions';
 import { playerDestinations } from '../assets/literal/playerDestinations';
-import { playerThresholds } from '../assets/literal/playerThresholds';
+import { playerThresholds } from '../assets/literal/playerThresholds'; // 새로 추가된 부분
 import { highlightMovablePieces } from '../assets/function/highlightMovablePieces';
-import { moveToNest } from '../assets/function/moveToNest';
 import { updateCurrentPlayerDisplay } from '../assets/function/playerUtils';
-import { checkVictory } from '../assets/function/victoryCheck';
 
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
+  const currentPlayerDisplay = document.getElementById(
+    'current-player-display',
+  ) as HTMLParagraphElement;
   let currentPlayer: number = 1;
   const totalPlayers: number = 4;
   let currentPlayerPiece: HTMLElement | null = null;
@@ -108,9 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
         moveToNest(
           parseInt(occupyingPlayer!, 10),
           startRect.firstChild as HTMLElement,
-          currentPlayer,
-          currentPlayerRect,
-          extraRoll,
         );
         extraRoll = true;
       }
@@ -173,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (destination.childElementCount === 0) {
       destination.appendChild(currentPlayerPiece!);
       console.log(`Player ${player}'s piece moved to ${destination.id}`);
-      checkVictory(player, playerDestinations, resetGame); // 올바르게 수정된 함수 호출
+      checkVictory(player);
     }
   }
 
@@ -189,17 +187,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const firstChildPlayer = (
         newRect.firstChild as HTMLElement
       )?.getAttribute('data-player');
-      const occupyingPlayer = firstChildPlayer
-        ? parseInt(firstChildPlayer, 10)
-        : null;
-
-      if (occupyingPlayer !== null && occupyingPlayer !== player) {
+      if (firstChildPlayer !== String(player)) {
         moveToNest(
-          occupyingPlayer,
+          parseInt(firstChildPlayer!, 10),
           newRect.firstChild as HTMLElement,
-          currentPlayer,
-          currentPlayerRect,
-          extraRoll,
         );
         extraRoll = true;
       }
@@ -212,6 +203,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (player !== 1 && initialRect <= 48 && position > 48) {
       currentPlayerPiece!.setAttribute('data-playcount', '1');
+    }
+  }
+
+  function moveToNest(player: number, piece: HTMLElement) {
+    const nest = document.getElementById(`player${player}-nest`) as HTMLElement;
+    const pieceClasses = piece.classList;
+    const lastClass = pieceClasses[pieceClasses.length - 1];
+    const pieceNumber = lastClass.match(/\d+$/)![0];
+
+    const selector = `#player${player}-piece-place${pieceNumber}`;
+    const nestPosition = nest.querySelector(selector) as HTMLElement;
+
+    if (nestPosition) {
+      nestPosition.appendChild(piece);
+    }
+    piece.setAttribute('data-playcount', '0');
+
+    console.log(`Player ${player}'s piece ${pieceNumber} moved to nest`);
+
+    saveGameState(currentPlayer, currentPlayerRect, extraRoll);
+  }
+
+  function checkVictory(player: number) {
+    const destinations = playerDestinations[player];
+
+    const allFilled = destinations.every((destId) => {
+      const dest = document.getElementById(destId);
+      return (
+        dest?.childElementCount !== undefined && dest.childElementCount > 0
+      );
+    });
+
+    if (allFilled) {
+      alert(`Player ${player} 승리!`);
+      resetGame();
     }
   }
 
