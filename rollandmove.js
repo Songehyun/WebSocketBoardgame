@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const rollButton = document.getElementById('roll-dice');
-  const currentPlayerDisplay = document.getElementById('current-player-display');
+  const currentPlayerDisplay = document.getElementById(
+    'current-player-display',
+  );
   let currentPlayer = 1;
   const totalPlayers = 4;
   let currentPlayerPiece = null;
@@ -98,7 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const piecePlayer = piece.classList[1].match(/\d/)[0];
       const pieceParent = piece.parentElement;
 
-      if (parseInt(piecePlayer) === currentPlayer && !(pieceParent && pieceParent.id.includes('dest'))) {
+      if (
+        parseInt(piecePlayer) === currentPlayer &&
+        !(pieceParent && pieceParent.id.includes('dest'))
+      ) {
         piece.style.border = '2px solid black';
       } else {
         piece.style.border = 'none';
@@ -117,7 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
       currentPlayerPiece = piece;
 
       const isInNest = piece.closest('.nest');
-      currentPlayerRect = isInNest ? null : parseInt(piece.parentElement.id.replace('rect', ''));
+      currentPlayerRect = isInNest
+        ? null
+        : parseInt(piece.parentElement.id.replace('rect', ''));
     });
   });
 
@@ -146,7 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
     startRect.appendChild(piece);
     currentPlayerRect = startRectNumber;
 
-    console.log(`Player ${player}'s piece ${pieceNumber} moved to ${startRect.id}`);
+    console.log(
+      `Player ${player}'s piece ${pieceNumber} moved to ${startRect.id}`,
+    );
 
     saveGameState();
   }
@@ -155,19 +164,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const pieceNumber = currentPlayerPiece.classList[1].match(/\d+$/)[0];
     const initialRect = currentPlayerRect;
     let finalPosition = currentPlayerRect + roll;
-    const piecePlayCount = parseInt(currentPlayerPiece.getAttribute('data-playcount'));
+    const piecePlayCount = parseInt(
+      currentPlayerPiece.getAttribute('data-playcount'),
+    );
     const threshold = playerThresholds[player];
 
     if (initialRect < 48 && finalPosition > 48) {
       if (player !== 1) {
+        console.log('play count 증가. ');
+        console.log(player, '왔다감.');
         currentPlayerPiece.setAttribute('data-playcount', '1');
+        finalPosition -= 48;
       }
-      finalPosition -= 48;
     }
 
     if (player === 1) {
       if (initialRect < 47 && finalPosition >= 47) {
         moveToDestination(player, finalPosition - 47);
+        console.log(player, '1이여만해');
       } else {
         movePieceToNewRect(finalPosition, player, pieceNumber, initialRect);
       }
@@ -211,7 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     newRect.appendChild(currentPlayerPiece);
-    console.log(`Player ${player}'s piece ${pieceNumber} moved from rect${initialRect} to ${newRect.id}`);
+    console.log(
+      `Player ${player}'s piece ${pieceNumber} moved from rect${initialRect} to ${newRect.id}`,
+    );
 
     // rect48을 지나는 경우 플래그 설정 (player 1 제외)
     if (player !== 1 && initialRect <= 48 && position > 48) {
@@ -256,7 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.piece').forEach((piece) => {
       const player = piece.classList[1].match(/\d/)[0];
       const pieceNumber = piece.classList[1].match(/\d+$/)[0];
-      const nest = document.getElementById(`player${player}-piece-place${pieceNumber}`);
+      const nest = document.getElementById(
+        `player${player}-piece-place${pieceNumber}`,
+      );
       nest.appendChild(piece);
       piece.setAttribute('data-playcount', '0');
     });

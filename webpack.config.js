@@ -1,7 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/roll.ts',
+  // 엔트리 포인트를 index.ts로 변경
+  entry: './src/index.ts',
   module: {
     rules: [
       {
@@ -15,7 +16,8 @@ module.exports = {
     extensions: ['.ts', '.js'],
   },
   output: {
-    filename: 'script.js',
+    // 번들된 파일 이름을 지정
+    filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
   devServer: {
