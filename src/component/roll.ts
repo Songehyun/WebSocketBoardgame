@@ -33,6 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCurrentPlayerDisplay(currentPlayer);
   }
 
+  // 스페이스바를 누르면 Roll 버튼을 클릭한 것과 동일한 효과 추가
+  document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+      event.preventDefault(); // 스크롤 방지
+      rollButton.click(); // Roll 버튼 클릭 효과
+    }
+  });
+
   rollButton.addEventListener('click', () => {
     const diceRoll = Math.floor(Math.random() * 6) + 1;
     const diceResultImg = document.getElementById(
@@ -92,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     startRectNumber += roll - 1;
 
+    // ! 스타트 렉이 48초과할 수 없음.
     if (startRectNumber > 48) {
       startRectNumber = startRectNumber - 48;
       piece.setAttribute('data-playcount', '1');
@@ -134,15 +143,16 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     const threshold = playerThresholds[player];
 
-    if (initialRect < 48 && finalPosition > 48) {
-      if (player !== 1) {
+    if (player !== 1) {
+      if (initialRect <= 48 && finalPosition > 48) {
         currentPlayerPiece!.setAttribute('data-playcount', '1');
+        finalPosition -= 48;
       }
-      finalPosition -= 48;
     }
 
     if (player === 1) {
-      if (initialRect < 47 && finalPosition >= 47) {
+      if (initialRect <= 47 && finalPosition > 47) {
+        console.log(player, '넘어감.');
         moveToDestination(player, finalPosition - 47);
       } else {
         movePieceToNewRect(finalPosition, player, pieceNumber, initialRect);
