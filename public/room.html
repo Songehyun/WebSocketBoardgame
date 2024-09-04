@@ -5,50 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Room</title>
     <link rel="stylesheet" href="../assets/style/styles.css" />
-    <script>
-      let currentPlayerId;
-      let currentTurnPlayerId = 1;
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const roomId = urlParams.get('roomId');
-
-      const ws = new WebSocket('ws://localhost:8080');
-
-      ws.onopen = function () {
-        if (roomId) {
-          ws.send(JSON.stringify({ type: 'join', roomId: roomId }));
-        }
-      };
-
-      ws.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-
-        if (data.type === 'joined') {
-          currentPlayerId = data.playerId; // 서버에서 할당된 playerId를 설정
-          updateTurnButton();
-        } else if (data.type === 'turnUpdate') {
-          currentTurnPlayerId = data.currentTurnPlayerId;
-          updateTurnButton();
-        }
-      };
-
-      function updateTurnButton() {
-        const turnButton = document.getElementById('turn-button');
-        turnButton.disabled = currentPlayerId !== currentTurnPlayerId;
-      }
-
-      function passTurn() {
-        if (currentPlayerId && currentPlayerId === currentTurnPlayerId) {
-          ws.send(
-            JSON.stringify({
-              type: 'turn',
-              roomId: roomId,
-              playerId: currentPlayerId,
-            }),
-          );
-        }
-      }
-    </script>
     <script src="../dist/bundle.js"></script>
   </head>
   <body>
