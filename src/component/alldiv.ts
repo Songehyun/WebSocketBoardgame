@@ -6,24 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // WebSocket 연결 코드 추가
-  const socket = new WebSocket('ws://localhost:8080');
-
-  // WebSocket 연결이 열렸을 때 처리할 이벤트
-  socket.onopen = function () {
-    console.log('WebSocket 연결이 열렸습니다.');
-  };
-
-  // WebSocket 연결에서 오류가 발생했을 때 처리할 이벤트
-  socket.onerror = function (error) {
-    console.error('WebSocket 오류 발생:', error);
-  };
-
-  // WebSocket 연결이 닫혔을 때 처리할 이벤트
-  socket.onclose = function () {
-    console.log('WebSocket 연결이 닫혔습니다.');
-  };
-
   const chatContainer = document.createElement('div');
   chatContainer.id = 'chat-container';
   const currentPlayerDisplay = document.createElement('p');

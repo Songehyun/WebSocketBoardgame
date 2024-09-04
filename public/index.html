@@ -1,15 +1,18 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Room List</title>
-    <script>
-      // WebSocket 연결 코드 (방 목록 상태 업데이트)
-      const ws = new WebSocket('ws://localhost:8080');
-      ws.onmessage = function (event) {
+    <script type="module">
+      import { WebSocketHandler } from './WebSocketHandler.js';
+
+      const wsHandler = new WebSocketHandler('ws://localhost:8080');
+
+      wsHandler.socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
+        console.log('방 상태 업데이트 데이터:', data); // 서버로부터 받은 데이터 콘솔에 출력
+
         if (data.type === 'roomState') {
           // Room 1 상태 업데이트
           const room1Link = document.getElementById('room1-link');

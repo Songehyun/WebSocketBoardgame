@@ -28,47 +28,22 @@ wss.on('connection', (ws: WebSocket) => {
 
   ws.on('message', (message) => {
     const data = JSON.parse(message.toString());
+    console.log('받은 메시지:', data); // 메시지 확인 로그
 
     if (data.type === 'join') {
       roomId = data.roomId;
+      console.log(`플레이어가 ${roomId}에 입장 시도`); // 입장 시도 로그
       if (roomId && rooms[roomId]) {
         if (rooms[roomId].players.length < rooms[roomId].maxPlayers) {
           const playerId = rooms[roomId].players.length + 1;
           rooms[roomId].players.push({ id: ws, playerId });
           ws.send(JSON.stringify({ type: 'joined', playerId }));
-          updateRoomState();
+          console.log(`Player ${playerId}가 ${roomId}에 입장함`); // 입장 로그
+
+          updateRoomState(); // 방 상태 업데이트
         } else {
-          // 방이 가득 찼을 때 클라이언트에 알림을 보냄
           ws.send(JSON.stringify({ type: 'roomFull' }));
         }
-      }
-    } else if (data.type === 'chat') {
-      if (roomId) {
-        const player = rooms[roomId].players.find((p) => p.id === ws);
-        if (player) {
-          broadcastToRoom(
-            roomId,
-            JSON.stringify({
-              type: 'chat',
-              message: `Player ${player.playerId}: ${data.message}`,
-            }),
-          );
-        }
-      }
-    } else if (data.type === 'turn') {
-      if (roomId && data.playerId === rooms[roomId].currentTurnPlayerId) {
-        const totalPlayers = rooms[roomId].players.length;
-        rooms[roomId].currentTurnPlayerId =
-          (rooms[roomId].currentTurnPlayerId % totalPlayers) + 1;
-        const message = `Player ${rooms[roomId].currentTurnPlayerId}의 차례입니다.`;
-        broadcastToRoom(roomId, JSON.stringify({ type: 'chat', message }));
-        broadcastToRoom(
-          roomId,
-          JSON.stringify({
-            type: 'turnUpdate',
-            currentTurnPlayerId: rooms[roomId].currentTurnPlayerId,
-          }),
-        );
       }
     }
   });
@@ -76,11 +51,13 @@ wss.on('connection', (ws: WebSocket) => {
   ws.on('close', () => {
     if (roomId && rooms[roomId]) {
       rooms[roomId].players = rooms[roomId].players.filter((p) => p.id !== ws);
-      updateRoomState();
+      console.log(`Player가 ${roomId}에서 퇴장함`); // 퇴장 로그
+      updateRoomState(); // 방 상태 업데이트
     }
   });
 });
 
+// 방 상태를 주기적으로 클라이언트에 전송하는 함수
 function updateRoomState() {
   const roomState = {
     type: 'roomState',
@@ -93,6 +70,7 @@ function updateRoomState() {
       maxPlayers: rooms.room2.maxPlayers,
     },
   };
+
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(roomState));
@@ -100,6 +78,7 @@ function updateRoomState() {
   });
 }
 
+// 특정 방의 모든 클라이언트에게 메시지 전송 함수
 function broadcastToRoom(roomId: string, message: string) {
   if (rooms[roomId]) {
     rooms[roomId].players.forEach((player) => {

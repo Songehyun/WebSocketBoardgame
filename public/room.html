@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Room</title>
     <link rel="stylesheet" href="../assets/style/styles.css" />
+    <script type="module">
+      import { WebSocketHandler } from './WebSocketHandler.js';
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        const wsHandler = new WebSocketHandler('ws://localhost:8080');
+
+        // 방에 입장 메시지 전송
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('roomId');
+        if (roomId) {
+          await wsHandler.sendMessage({ type: 'join', roomId: roomId });
+        }
+
+        // WebSocket 메시지 수신 시 처리
+        wsHandler.socket.onmessage = function (event) {
+          const data = JSON.parse(event.data);
+          console.log('서버로부터 받은 메시지:', data);
+
+          // 필요에 따라 UI 업데이트 또는 다른 로직 추가
+        };
+      });
+    </script>
     <script src="../dist/bundle.js"></script>
   </head>
   <body>
