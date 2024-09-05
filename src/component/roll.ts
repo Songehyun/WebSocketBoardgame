@@ -136,7 +136,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         piece.classList[1]?.match(/\d/)?.[0] ?? '0',
         10,
       );
+
+      // currentPlayer 값을 실시간으로 참조
+      console.log('커런트는', currentPlayer);
+      console.log('피쓰는', piecePlayer);
+
+      // 클릭 시점의 currentPlayer 값을 사용하여 비교
       if (piecePlayer !== currentPlayer) {
+        console.log('커런트는', currentPlayer);
+        console.log('피쓰는', piecePlayer);
         return;
       }
 
