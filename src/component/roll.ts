@@ -5,7 +5,7 @@ import { playerThresholds } from '../assets/literal/playerThresholds'; // 새로
 import { highlightMovablePieces } from '../assets/function/highlightMovablePieces';
 import { updateCurrentPlayerDisplay } from '../assets/function/playerUtils';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
   const currentPlayerDisplay = document.getElementById(
     'current-player-display',
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let extraRoll: boolean = false;
 
   // 게임 상태 로드
-  const gameState = loadGameState();
+  const gameState = await loadGameState(); // await 추가
   if (gameState) {
     currentPlayer = gameState.currentPlayer || 1;
     currentPlayerRect = gameState.currentPlayerRect || null;
