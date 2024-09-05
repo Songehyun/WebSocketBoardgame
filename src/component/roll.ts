@@ -1,7 +1,7 @@
 import { saveGameState, loadGameState } from '../assets/function/gameState';
 import { playerPositions } from '../assets/literal/playerPositions';
 import { playerDestinations } from '../assets/literal/playerDestinations';
-import { playerThresholds } from '../assets/literal/playerThresholds'; // 새로 추가된 부분
+import { playerThresholds } from '../assets/literal/playerThresholds';
 import { highlightMovablePieces } from '../assets/function/highlightMovablePieces';
 import { updateCurrentPlayerDisplay } from '../assets/function/playerUtils';
 
@@ -22,6 +22,13 @@ socket.addEventListener('message', (event) => {
     if (data.gameState) {
       updateGameState(data.gameState);
     }
+  }
+
+  // currentPlayer 업데이트를 실시간으로 처리
+  if (data.type === 'updateCurrentPlayer') {
+    const currentPlayer = data.currentPlayer;
+    updateCurrentPlayerDisplay(currentPlayer);
+    highlightMovablePieces(currentPlayer);
   }
 });
 
@@ -117,6 +124,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     socket.send(
       JSON.stringify({ type: 'diceRoll', roll: diceRoll, gameState }),
     );
+
+    // currentPlayer 정보 서버로 전송
+    socket.send(JSON.stringify({ type: 'updateCurrentPlayer', currentPlayer }));
   });
 
   document.querySelectorAll('.piece').forEach((piece) => {

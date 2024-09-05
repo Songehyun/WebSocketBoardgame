@@ -47,6 +47,17 @@ wss.on('connection', (ws: WebSocket) => {
         }),
       );
     }
+
+    // currentPlayer 상태 업데이트
+    if (data.type === 'updateCurrentPlayer') {
+      rooms.room1.currentTurnPlayerId = data.currentPlayer;
+      broadcastToAllClients(
+        JSON.stringify({
+          type: 'updateCurrentPlayer',
+          currentPlayer: data.currentPlayer,
+        }),
+      );
+    }
   });
 });
 
@@ -54,27 +65,6 @@ function broadcastToAllClients(message: string) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(message);
-    }
-  });
-}
-
-// 방 상태 주기적으로 업데이트 함수
-function updateRoomState() {
-  const roomState = {
-    type: 'roomState',
-    room1: {
-      players: rooms.room1.players.length,
-      maxPlayers: rooms.room1.maxPlayers,
-    },
-    room2: {
-      players: rooms.room2.players.length,
-      maxPlayers: rooms.room2.maxPlayers,
-    },
-  };
-
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(roomState));
     }
   });
 }
