@@ -5,6 +5,37 @@ import { playerThresholds } from '../assets/literal/playerThresholds'; // 새로
 import { highlightMovablePieces } from '../assets/function/highlightMovablePieces';
 import { updateCurrentPlayerDisplay } from '../assets/function/playerUtils';
 
+// WebSocket 연결 설정
+const socket = new WebSocket('ws://localhost:8080');
+
+socket.addEventListener('message', (event) => {
+  const data = JSON.parse(event.data);
+
+  if (data.type === 'diceRoll') {
+    // 주사위 결과를 다른 플레이어에게 전달받은 경우 화면 업데이트
+    const diceResultImg = document.getElementById(
+      'dice-result',
+    ) as HTMLImageElement;
+    diceResultImg.src = `../assets/img/${data.roll}.png`;
+
+    // 다른 플레이어가 말을 움직였을 경우 게임 상태 업데이트
+    if (data.gameState) {
+      updateGameState(data.gameState);
+    }
+  }
+});
+
+function updateGameState(gameState: any) {
+  // 서버에서 전달된 게임 상태로 화면 업데이트 로직
+  Object.keys(gameState.pieces).forEach((pieceId) => {
+    const { parentId, playCount } = gameState.pieces[pieceId];
+    const piece = document.querySelector(`.${pieceId}`) as HTMLElement;
+    const parentElement = document.getElementById(parentId);
+    parentElement?.appendChild(piece);
+    piece.setAttribute('data-playcount', playCount);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const rollButton = document.getElementById('roll-dice') as HTMLButtonElement;
   const currentPlayerDisplay = document.getElementById(
@@ -17,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let extraRoll: boolean = false;
 
   // 게임 상태 로드
-  const gameState = await loadGameState(); // await 추가
+  const gameState = await loadGameState();
   if (gameState) {
     currentPlayer = gameState.currentPlayer || 1;
     currentPlayerRect = gameState.currentPlayerRect || null;
@@ -67,6 +98,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateCurrentPlayerDisplay(currentPlayer);
     saveGameState(currentPlayer, currentPlayerRect, extraRoll);
     highlightMovablePieces(currentPlayer);
+
+    // WebSocket을 통해 주사위 굴림 결과와 게임 상태 서버로 전송
+    const gameState = {
+      currentPlayer,
+      currentPlayerRect,
+      extraRoll,
+      pieces: {} as any,
+    };
+
+    document.querySelectorAll('.piece').forEach((piece) => {
+      const pieceId = piece.classList[1];
+      const parentId = piece.parentElement!.id;
+      const playCount = piece.getAttribute('data-playcount');
+      gameState.pieces[pieceId] = { parentId, playCount };
+    });
+
+    socket.send(
+      JSON.stringify({ type: 'diceRoll', roll: diceRoll, gameState }),
+    );
   });
 
   document.querySelectorAll('.piece').forEach((piece) => {
@@ -100,7 +150,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     startRectNumber += roll - 1;
 
-    // ! 스타트 렉이 48초과할 수 없음.
     if (startRectNumber > 48) {
       startRectNumber = startRectNumber - 48;
       piece.setAttribute('data-playcount', '1');
@@ -126,10 +175,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     startRect.appendChild(piece);
     currentPlayerRect = startRectNumber;
 
-    console.log(
-      `Player ${player}'s piece ${pieceNumber} moved to ${startRect.id}`,
-    );
-
     saveGameState(currentPlayer, currentPlayerRect, extraRoll);
   }
 
@@ -152,7 +197,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (player === 1) {
       if (initialRect <= 47 && finalPosition > 47) {
-        console.log(player, '넘어감.');
         moveToDestination(player, finalPosition - 47);
       } else {
         movePieceToNewRect(finalPosition, player, pieceNumber, initialRect);
@@ -180,7 +224,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     ) as HTMLElement;
     if (destination.childElementCount === 0) {
       destination.appendChild(currentPlayerPiece!);
-      console.log(`Player ${player}'s piece moved to ${destination.id}`);
       checkVictory(player);
     }
   }
@@ -207,9 +250,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     newRect.appendChild(currentPlayerPiece!);
-    console.log(
-      `Player ${player}'s piece ${pieceNumber} moved from rect${initialRect} to ${newRect.id}`,
-    );
 
     if (player !== 1 && initialRect <= 48 && position > 48) {
       currentPlayerPiece!.setAttribute('data-playcount', '1');
@@ -229,10 +269,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       nestPosition.appendChild(piece);
     }
     piece.setAttribute('data-playcount', '0');
-
-    console.log(`Player ${player}'s piece ${pieceNumber} moved to nest`);
-
-    saveGameState(currentPlayer, currentPlayerRect, extraRoll);
   }
 
   function checkVictory(player: number) {
@@ -268,7 +304,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     localStorage.removeItem('gameState');
 
-    alert('게임이 리셋되었습니다. Player 1의 차례입니다.');
     highlightMovablePieces(currentPlayer);
     updateCurrentPlayerDisplay(currentPlayer);
   }
