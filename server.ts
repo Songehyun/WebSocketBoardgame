@@ -32,13 +32,48 @@ const redisClient = createClient();
 redisClient.on('error', (err) => console.log('Redis Client Error', err));
 await redisClient.connect();
 
-// WebSocket 연결 관리
+// 방 상태를 모든 클라이언트에게 브로드캐스트하는 함수
+function broadcastRoomStates() {
+  const roomState = {
+    type: 'roomState',
+    rooms: Object.keys(rooms).map((roomId) => ({
+      roomId,
+      players: rooms[roomId].players.length,
+      maxPlayers: rooms[roomId].maxPlayers,
+    })),
+  };
+
+  broadcastToAllClients(JSON.stringify(roomState));
+}
+
+// 새로운 플레이어가 입장할 때 방 상태를 브로드캐스트
 wss.on('connection', (ws: WebSocket) => {
   ws.on('message', (message) => {
     const data = JSON.parse(message.toString());
 
+    if (data.type === 'join') {
+      const room = rooms[data.roomId];
+      if (room.players.length < room.maxPlayers) {
+        const newPlayerId = room.players.length + 1;
+        room.players.push({ id: ws, playerId: newPlayerId });
+
+        ws.send(JSON.stringify({ type: 'joined', playerId: newPlayerId }));
+
+        // 새로운 플레이어가 입장하면 방 상태 브로드캐스트
+        broadcastRoomStates();
+      }
+    }
+
+    if (data.type === 'leave') {
+      // 플레이어가 방을 떠날 때 처리
+      const room = rooms[data.roomId];
+      room.players = room.players.filter((player) => player.id !== ws);
+
+      // 방 상태 업데이트 브로드캐스트
+      broadcastRoomStates();
+    }
+
     if (data.type === 'diceRoll') {
-      // 모든 클라이언트에게 주사위 굴림 결과와 게임 상태를 전송
       broadcastToAllClients(
         JSON.stringify({
           type: 'diceRoll',
@@ -48,7 +83,6 @@ wss.on('connection', (ws: WebSocket) => {
       );
     }
 
-    // currentPlayer 상태 업데이트
     if (data.type === 'updateCurrentPlayer') {
       rooms.room1.currentTurnPlayerId = data.currentPlayer;
       broadcastToAllClients(
@@ -59,8 +93,22 @@ wss.on('connection', (ws: WebSocket) => {
       );
     }
   });
+
+  // 연결이 끊겼을 때 처리
+  ws.on('close', () => {
+    // 연결이 끊어진 플레이어를 방에서 제거
+    Object.keys(rooms).forEach((roomId) => {
+      rooms[roomId].players = rooms[roomId].players.filter(
+        (player) => player.id !== ws,
+      );
+    });
+
+    // 방 상태 업데이트 브로드캐스트
+    broadcastRoomStates();
+  });
 });
 
+// 모든 클라이언트에 메시지 전송하는 함수
 function broadcastToAllClients(message: string) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
@@ -68,6 +116,11 @@ function broadcastToAllClients(message: string) {
     }
   });
 }
+
+// 주기적으로 방 상태를 전송 (예: 5초마다)
+setInterval(() => {
+  broadcastRoomStates();
+}, 5000);
 
 // 게임 상태 저장 API
 app.post('/save-game', async (req, res) => {

@@ -21,9 +21,6 @@
         // WebSocket 메시지 수신 시 처리
         wsHandler.socket.onmessage = function (event) {
           const data = JSON.parse(event.data);
-          console.log('서버로부터 받은 메시지:', data);
-
-          // 필요에 따라 UI 업데이트 또는 다른 로직 추가
         };
       });
     </script>
