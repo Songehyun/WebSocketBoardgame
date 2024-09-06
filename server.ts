@@ -8,7 +8,7 @@ type Player = { id: WebSocket; playerId: number };
 
 type Rooms = {
   [key: string]: {
-    players: Player[];
+    players: (Player | null)[]; // null 값으로 빈 자리를 관리
     maxPlayers: number;
     currentTurnPlayerId: number;
   };
@@ -23,8 +23,16 @@ app.use(express.json());
 app.use(cors({ origin: 'http://127.0.0.1:5501', credentials: true }));
 
 let rooms: Rooms = {
-  room1: { players: [], maxPlayers: 4, currentTurnPlayerId: 1 },
-  room2: { players: [], maxPlayers: 4, currentTurnPlayerId: 1 },
+  room1: {
+    players: [null, null, null, null],
+    maxPlayers: 4,
+    currentTurnPlayerId: 1,
+  },
+  room2: {
+    players: [null, null, null, null],
+    maxPlayers: 4,
+    currentTurnPlayerId: 1,
+  },
 };
 
 // Redis 클라이언트 설정
@@ -38,7 +46,7 @@ function broadcastRoomStates() {
     type: 'roomState',
     rooms: Object.keys(rooms).map((roomId) => ({
       roomId,
-      players: rooms[roomId].players.length,
+      players: rooms[roomId].players.filter((player) => player !== null).length,
       maxPlayers: rooms[roomId].maxPlayers,
     })),
   };
@@ -46,28 +54,36 @@ function broadcastRoomStates() {
   broadcastToAllClients(JSON.stringify(roomState));
 }
 
-// 새로운 플레이어가 입장할 때 방 상태를 브로드캐스트
+// 새로운 플레이어가 입장할 때 빈 자리를 찾아 배정
 wss.on('connection', (ws: WebSocket) => {
   ws.on('message', (message) => {
     const data = JSON.parse(message.toString());
 
     if (data.type === 'join') {
       const room = rooms[data.roomId];
-      if (room.players.length < room.maxPlayers) {
-        const newPlayerId = room.players.length + 1;
-        room.players.push({ id: ws, playerId: newPlayerId });
+      const emptySlotIndex = room.players.findIndex(
+        (player) => player === null,
+      );
+
+      if (emptySlotIndex !== -1) {
+        const newPlayerId = emptySlotIndex + 1;
+        room.players[emptySlotIndex] = { id: ws, playerId: newPlayerId };
 
         ws.send(JSON.stringify({ type: 'joined', playerId: newPlayerId }));
 
         // 새로운 플레이어가 입장하면 방 상태 브로드캐스트
         broadcastRoomStates();
+      } else {
+        ws.send(JSON.stringify({ type: 'roomFull' }));
       }
     }
 
     if (data.type === 'leave') {
-      // 플레이어가 방을 떠날 때 처리
+      // 플레이어가 방을 떠날 때 해당 자리를 null로 만듦
       const room = rooms[data.roomId];
-      room.players = room.players.filter((player) => player.id !== ws);
+      room.players = room.players.map((player) =>
+        player?.id === ws ? null : player,
+      );
 
       // 방 상태 업데이트 브로드캐스트
       broadcastRoomStates();
@@ -98,8 +114,8 @@ wss.on('connection', (ws: WebSocket) => {
   ws.on('close', () => {
     // 연결이 끊어진 플레이어를 방에서 제거
     Object.keys(rooms).forEach((roomId) => {
-      rooms[roomId].players = rooms[roomId].players.filter(
-        (player) => player.id !== ws,
+      rooms[roomId].players = rooms[roomId].players.map((player) =>
+        player?.id === ws ? null : player,
       );
     });
 
