@@ -7,6 +7,7 @@ import { updateCurrentPlayerDisplay } from '../assets/function/playerUtils';
 
 // WebSocket 연결 설정
 const socket = new WebSocket('ws://localhost:8080');
+let currentPlayer: number = 1; // currentPlayer 값을 전역에서 관리
 
 socket.addEventListener('message', (event) => {
   const data = JSON.parse(event.data);
@@ -26,7 +27,7 @@ socket.addEventListener('message', (event) => {
 
   // currentPlayer 업데이트를 실시간으로 처리
   if (data.type === 'updateCurrentPlayer') {
-    const currentPlayer = data.currentPlayer;
+    currentPlayer = data.currentPlayer; // 전역 currentPlayer 업데이트
     updateCurrentPlayerDisplay(currentPlayer);
     highlightMovablePieces(currentPlayer);
   }
@@ -48,7 +49,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const currentPlayerDisplay = document.getElementById(
     'current-player-display',
   ) as HTMLParagraphElement;
-  let currentPlayer: number = 1;
   const totalPlayers: number = 4;
   let currentPlayerPiece: HTMLElement | null = null;
   let currentPlayerRect: number | null = null;
@@ -131,20 +131,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.querySelectorAll('.piece').forEach((piece) => {
     piece.setAttribute('data-playcount', '0');
-    piece.addEventListener('click', () => {
+    piece.addEventListener('click', (event) => {
       const piecePlayer = parseInt(
         piece.classList[1]?.match(/\d/)?.[0] ?? '0',
         10,
       );
 
-      // currentPlayer 값을 실시간으로 참조
-      console.log('커런트는', currentPlayer);
-      console.log('피쓰는', piecePlayer);
+      // console.log('커런트는', currentPlayer);
+      // console.log('피쓰는', piecePlayer);
 
-      // 클릭 시점의 currentPlayer 값을 사용하여 비교
       if (piecePlayer !== currentPlayer) {
-        console.log('커런트는', currentPlayer);
-        console.log('피쓰는', piecePlayer);
+        // console.log('커런트는', currentPlayer);
+        // console.log('피쓰는', piecePlayer);
         return;
       }
 
